@@ -8,6 +8,12 @@ public class Building {
     private Elevator elevator;
     private int passengerNumber;
 
+    public Building(List<Floor> floors, Elevator elevator, int passengerNumber) {
+        this.floors = floors;
+        this.elevator = elevator;
+        this.passengerNumber = passengerNumber;
+    }
+
     public List<Floor> getFloors() {
         return floors;
     }

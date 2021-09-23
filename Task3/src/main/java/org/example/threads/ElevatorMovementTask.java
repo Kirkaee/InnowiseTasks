@@ -14,7 +14,7 @@ public class ElevatorMovementTask implements Runnable {
     private final Building building;
     private Elevator elevator;
     private Controller controller;
-    private Validator validator;
+    private final Validator validator;
 
     public ElevatorMovementTask(Building building, Controller controller) {
         this.building = building;
@@ -41,29 +41,20 @@ public class ElevatorMovementTask implements Runnable {
 
     public void run() {
         logger.info("STARTING_TRANSPORTATION");
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         controller.getLock().lock();
 
-        while (!elevator.getContainer().isEmpty() || !building.getFloors().stream()
-                .allMatch(n -> n.getDispatchContainer().isEmpty())) {
+        while (checkNeedToMoveElevator()) {
 
-            if (elevator.getMovementDirection() == MovementDirection.UP) {
-                elevator.openDoor(controller.getConditionElevator(), controller.getConditionPassenger(), controller.getConditionElevatorsPassenger());
-                elevator.closeDoor();
-                elevator.setCurrentFloor(elevator.getCurrentFloor() + 1);
-                logger.info("MOVING_ELEVATOR (from floor-" + (elevator.getCurrentFloor() - 1)
-                        + " to floor-" + elevator.getCurrentFloor() + ")");
-            } else {
-                elevator.openDoor(controller.getConditionElevator(), controller.getConditionPassenger(), controller.getConditionElevatorsPassenger());
-                elevator.closeDoor();
-                elevator.setCurrentFloor(elevator.getCurrentFloor() - 1);
-                logger.info("MOVING_ELEVATOR (from floor-" + (elevator.getCurrentFloor() + 1)
-                        + " to floor-" + elevator.getCurrentFloor() + ")");
-            }
+            elevator.openDoor(controller.getConditionElevator(),
+                    controller.getConditionPassenger(),
+                    controller.getConditionElevatorsPassenger(),
+                    building.getFloors().get(elevator.getCurrentFloor() - 1).getDispatchContainer());
+            elevator.closeDoor();
+
+            int floorIncrement = elevator.getMovementDirection().floorIncrement;
+            elevator.setCurrentFloor(elevator.getCurrentFloor() + floorIncrement);
+            logger.info("MOVING_ELEVATOR (from floor-" + (elevator.getCurrentFloor() - floorIncrement)
+                    + " to floor-" + elevator.getCurrentFloor() + ")");
 
             if (elevator.getCurrentFloor() == elevator.getTopFloor()) {
                 elevator.setMovementDirection(MovementDirection.DOWN);
@@ -77,5 +68,10 @@ public class ElevatorMovementTask implements Runnable {
 
         validator.checkAll(building);
 
+    }
+
+    public boolean checkNeedToMoveElevator() {
+        return !elevator.getContainer().isEmpty() | !building.getFloors().stream()
+                .allMatch(n -> n.getDispatchContainer().isEmpty());
     }
 }

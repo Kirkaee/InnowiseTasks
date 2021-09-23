@@ -4,14 +4,13 @@ import org.example.enums.MovementDirection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 
 public class Elevator {
 
     private int topFloor;
     private int capacity;
-    private List<Passenger> container;
+    private final List<Passenger> container;
     private int currentFloor;
     private MovementDirection movementDirection;
     private boolean door;
@@ -73,25 +72,28 @@ public class Elevator {
         this.door = door;
     }
 
-    public void openDoor(Condition elevatorCondition, Condition enterCondition, Condition exitCondition){
+    public void openDoor(Condition elevatorCondition, Condition enterCondition, Condition exitCondition, List<Passenger> floor) {
         door = true;
-        exitCondition.signalAll();
-        try {
-            elevatorCondition.await(200, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        if (container.stream().anyMatch(n -> n.getDestinationFloor() == currentFloor)) {
+            exitCondition.signalAll();
+            sleepElevator(elevatorCondition);
         }
-        if (getContainer().size() < capacity){
+        if (getContainer().size() < capacity & !floor.isEmpty()) {
             enterCondition.signalAll();
-            try {
-                elevatorCondition.await(200, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleepElevator(elevatorCondition);
         }
+}
+
+    public void closeDoor() {
+        door = false;
     }
 
-    public void closeDoor(){
-        door = false;
+    public void sleepElevator(Condition elevatorCondition){
+        try {
+            elevatorCondition.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
