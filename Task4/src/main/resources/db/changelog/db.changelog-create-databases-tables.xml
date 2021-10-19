@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" logicalFilePath="db.changelog-master.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="01102021-create-databases-tables" author="kirill_beliacky">
+
+        <createTable tableName="faculty">
+            <column name="faculty_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="faculty_name" type="VARCHAR(100)"/>
+        </createTable>
+
+        <createTable tableName="department">
+            <column name="department_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="department_name" type="VARCHAR(100)"/>
+            <column name="faculty_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="department"
+                                 baseColumnNames="faculty_id"
+                                 constraintName="fk_faculty_department"
+                                 referencedTableName="faculty"
+                                 referencedColumnNames="faculty_id"/>
+
+        <createTable tableName="teacher">
+            <column name="teacher_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="teacher_fio" type="VARCHAR"/>
+            <column name="teacher_degree" type="VARCHAR(100)"/>
+            <column name="teacher_experience" type="INTEGER"/>
+            <column name="department_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="teacher"
+                                 baseColumnNames="department_id"
+                                 constraintName="fk_department_teacher"
+                                 referencedTableName="department"
+                                 referencedColumnNames="department_id"/>
+
+        <createTable tableName="room">
+            <column name="room_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="room_type" type="VARCHAR(100)"/>
+            <column name="room_capacity" type="INTEGER"/>
+        </createTable>
+
+        <createTable tableName="speaker">
+            <column name="speaker_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="speaker_fio" type="VARCHAR"/>
+            <column name="speaker_title" type="VARCHAR(150)"/>
+            <column name="speaker_membership" type="VARCHAR(150)"/>
+        </createTable>
+
+        <createTable tableName="subject">
+            <column name="subject_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="subject_name" type="VARCHAR(100)"/>
+        </createTable>
+
+        <createTable tableName="study_hour">
+            <column name="study_hour_id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="study_hour_class_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="study_hour_type" type="VARCHAR(20)"/>
+            <column name="event_topic" type="VARCHAR(20)"/>
+            <column name="room_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+            <column name="teacher_id" type="BIGINT"/>
+            <column name="speaker_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="study_hour"
+                                 baseColumnNames="room_id"
+                                 constraintName="fk_room_study_hour"
+                                 referencedTableName="room"
+                                 referencedColumnNames="room_id"/>
+        <addForeignKeyConstraint baseTableName="study_hour"
+                                 baseColumnNames="subject_id"
+                                 constraintName="fk_subject_study_hour"
+                                 referencedTableName="subject"
+                                 referencedColumnNames="subject_id"/>
+        <addForeignKeyConstraint baseTableName="study_hour"
+                                 baseColumnNames="teacher_id"
+                                 constraintName="fk_teacher_study_hour"
+                                 referencedTableName="teacher"
+                                 referencedColumnNames="teacher_id"/>
+        <addForeignKeyConstraint baseTableName="study_hour"
+                                 baseColumnNames="speaker_id"
+                                 constraintName="fk_speaker_study_hour"
+                                 referencedTableName="speaker"
+                                 referencedColumnNames="speaker_id"/>
+
+        <createTable tableName="event_speakers">
+            <column name="study_hour_id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="speaker_id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="event_speakers"
+                                 baseColumnNames="study_hour_id"
+                                 constraintName="fk_study_hour_speaker"
+                                 referencedTableName="study_hour"
+                                 referencedColumnNames="study_hour_id"/>
+        <addForeignKeyConstraint baseTableName="event_speakers"
+                                 baseColumnNames="speaker_id"
+                                 constraintName="fk_speaker_event"
+                                 referencedTableName="speaker"
+                                 referencedColumnNames="speaker_id"/>
+
+    </changeSet>
+
+</databaseChangeLog>
