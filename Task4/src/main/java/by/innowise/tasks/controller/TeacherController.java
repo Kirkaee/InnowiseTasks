@@ -15,8 +15,8 @@ public class TeacherController {
     private TeacherService teacherService;
 
     @GetMapping
-    public List<TeacherDto> getTeachers() {
-        return teacherService.getTeachers();
+    public List<TeacherDto> getAllTeachers() {
+        return teacherService.getAllTeachers();
     }
 
     @GetMapping("/{id}")

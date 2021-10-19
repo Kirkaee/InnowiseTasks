@@ -44,7 +44,7 @@ class DepartmentRepositoryTest extends AbstractIntegrationDataBaseTest {
     }
 
     @Test
-    public void findAllDepartment() {
+    public void findAllDepartments() {
         assertFalse(departmentRepository.findAll().isEmpty());
     }
 

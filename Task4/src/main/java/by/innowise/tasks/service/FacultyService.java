@@ -27,7 +27,7 @@ public class FacultyService {
                                 .toFaculty(facultyDto)));
     }
 
-    public List<FacultyDto> getFaculty() {
+    public List<FacultyDto> getAllFaculties() {
         return facultyRepository
                 .findAll()
                 .stream()

@@ -27,7 +27,7 @@ public class TeacherService {
                                 .toTeacher(teacherDto)));
     }
 
-    public List<TeacherDto> getTeachers() {
+    public List<TeacherDto> getAllTeachers() {
         return teacherRepository
                 .findAll()
                 .stream()

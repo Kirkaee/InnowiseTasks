@@ -45,6 +45,8 @@ class FacultyServiceTest {
             .departmentsDto(DEFAULT_DEPARTMENTS_DTO)
             .build();
 
+    public static final List<Faculty> DEFAULT_FACULTIES_LIST = List.of(DEFAULT_FACULTY);
+
     @Mock
     private FacultyMapper facultyMapper;
 
@@ -70,15 +72,13 @@ class FacultyServiceTest {
 
     @Test
     void getFaculty() {
-        List<Faculty> faculty = List.of(DEFAULT_FACULTY);
-        given(facultyRepository.findAll()).willReturn(faculty);
+        given(facultyRepository.findAll()).willReturn(DEFAULT_FACULTIES_LIST);
         given(facultyMapper.toFacultyDto(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY_DTO);
 
-        assertEquals(DEFAULT_FACULTY_DTO, facultyService.getFaculty().get(0));
+        assertEquals(DEFAULT_FACULTY_DTO, facultyService.getAllFaculties().get(0));
 
         then(facultyRepository).should(only()).findAll();
-        then(facultyMapper).should(times(1)).toFacultyDto(DEFAULT_FACULTY);
-        then(facultyMapper).shouldHaveNoMoreInteractions();
+        then(facultyMapper).should(only()).toFacultyDto(DEFAULT_FACULTY);
 
     }
 
@@ -90,8 +90,7 @@ class FacultyServiceTest {
         assertEquals(DEFAULT_FACULTY_DTO, facultyService.getFacultyById(DEFAULT_ID));
 
         then(facultyRepository).should(only()).findById(DEFAULT_ID);
-        then(facultyMapper).should(times(1)).toFacultyDto(DEFAULT_FACULTY);
-        then(facultyMapper).shouldHaveNoMoreInteractions();
+        then(facultyMapper).should(only()).toFacultyDto(DEFAULT_FACULTY);
     }
 
     @Test

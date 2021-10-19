@@ -85,7 +85,7 @@ class SubjectControllerTest {
     }
 
     @Test
-    void getSubject() {
+    void getAllSubjects() {
         given(subjectRepository.findAll()).willReturn(List.of(DEFAULT_SUBJECT));
 
         webTestClient.get()
@@ -113,7 +113,7 @@ class SubjectControllerTest {
     }
 
     @Test
-    void getSubjectByIdNotFound() {
+    void getSubjectByIdNotFoundException() {
         given(subjectRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

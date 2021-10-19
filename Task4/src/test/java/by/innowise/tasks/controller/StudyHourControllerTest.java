@@ -175,7 +175,7 @@ class StudyHourControllerTest {
     }
 
     @Test
-    void getStudyHour() {
+    void getAllStudyHours() {
         given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_EVENT));
 
         webTestClient.get()

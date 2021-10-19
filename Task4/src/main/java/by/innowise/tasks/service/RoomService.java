@@ -27,7 +27,7 @@ public class RoomService {
                                 .toRoom(roomDto)));
     }
 
-    public List<RoomDto> getRooms() {
+    public List<RoomDto> getAllRooms() {
         return roomRepository
                 .findAll()
                 .stream()

@@ -89,7 +89,7 @@ class RoomControllerTest {
     }
 
     @Test
-    void getRoom() {
+    void getAllRooms() {
         given(roomRepository.findAll()).willReturn(List.of(DEFAULT_ROOM));
 
         webTestClient.get()
@@ -117,7 +117,7 @@ class RoomControllerTest {
     }
 
     @Test
-    void getRoomByIdNotFound() {
+    void getRoomByIdNotFoundException() {
         given(roomRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

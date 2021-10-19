@@ -33,12 +33,12 @@ class SpeakerRepositoryTest extends AbstractIntegrationDataBaseTest {
     private SpeakerRepository speakerRepository;
 
     @Test
-    public void shouldSaveSpeaker() {
+    public void saveSpeakers() {
         assertEquals(DEFAULT_SPEAKER, speakerRepository.save(DEFAULT_SPEAKER));
     }
 
     @Test
-    public void findById() {
+    public void findByIdSpeaker() {
         assertTrue(speakerRepository.findById(2L).isPresent());
     }
 

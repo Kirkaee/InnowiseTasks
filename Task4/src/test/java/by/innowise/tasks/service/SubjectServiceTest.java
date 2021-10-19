@@ -38,6 +38,8 @@ class SubjectServiceTest {
             .name(DEFAULT_NAME)
             .build();
 
+    public static final List<Subject> DEFAULT_SUBJECTS_LIST = List.of(DEFAULT_SUBJECT);
+
     @Mock
     private SubjectRepository subjectRepository;
 
@@ -63,15 +65,13 @@ class SubjectServiceTest {
 
     @Test
     void getSubjects() {
-        List<Subject> subjects = List.of(DEFAULT_SUBJECT);
-        given(subjectRepository.findAll()).willReturn(subjects);
+        given(subjectRepository.findAll()).willReturn(DEFAULT_SUBJECTS_LIST);
         given(subjectMapper.toSubjectDto(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT_DTO);
 
-        assertEquals(DEFAULT_SUBJECT_DTO, subjectService.getSubjects().get(0));
+        assertEquals(DEFAULT_SUBJECT_DTO, subjectService.getAllSubjects().get(0));
 
         then(subjectRepository).should(only()).findAll();
-        then(subjectMapper).should(times(1)).toSubjectDto(DEFAULT_SUBJECT);
-        then(subjectMapper).shouldHaveNoMoreInteractions();
+        then(subjectMapper).should(only()).toSubjectDto(DEFAULT_SUBJECT);
     }
 
     @Test
@@ -82,8 +82,7 @@ class SubjectServiceTest {
         assertEquals(DEFAULT_SUBJECT_DTO, subjectService.getSubjectById(DEFAULT_ID));
 
         then(subjectRepository).should(only()).findById(DEFAULT_ID);
-        then(subjectMapper).should(times(1)).toSubjectDto(DEFAULT_SUBJECT);
-        then(subjectMapper).shouldHaveNoMoreInteractions();
+        then(subjectMapper).should(only()).toSubjectDto(DEFAULT_SUBJECT);
     }
 
     @Test

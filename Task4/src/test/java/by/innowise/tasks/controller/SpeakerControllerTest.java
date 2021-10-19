@@ -111,7 +111,7 @@ class SpeakerControllerTest {
     }
 
     @Test
-    void getSpeakerByIdNotFound() {
+    void getSpeakerByIdNotFoundException() {
         given(speakerRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

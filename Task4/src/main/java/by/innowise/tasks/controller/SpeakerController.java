@@ -15,8 +15,8 @@ public class SpeakerController {
     private SpeakerService speakerService;
 
     @GetMapping
-    public List<SpeakerDto> getSpeaker() {
-        return speakerService.getSpeakers();
+    public List<SpeakerDto> getAllSpeakers() {
+        return speakerService.getAllSpeakers();
     }
 
     @GetMapping("/{id}")

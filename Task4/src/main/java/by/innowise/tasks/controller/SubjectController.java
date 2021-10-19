@@ -15,8 +15,8 @@ public class SubjectController {
     private SubjectService subjectService;
 
     @GetMapping
-    public List<SubjectDto> getSubject() {
-        return subjectService.getSubjects();
+    public List<SubjectDto> getAllSubjects() {
+        return subjectService.getAllSubjects();
     }
 
     @GetMapping("/{id}")

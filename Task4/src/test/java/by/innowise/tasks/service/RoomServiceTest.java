@@ -41,6 +41,8 @@ class RoomServiceTest {
             .capacity(DEFAULT_CAPACITY)
             .build();
 
+    public static final List<Room> DEFAULT_ROOM_LIST = List.of(DEFAULT_ROOM);
+
     @Mock
     private RoomRepository roomRepository;
 
@@ -66,15 +68,13 @@ class RoomServiceTest {
 
     @Test
     void getRooms() {
-        List<Room> rooms = List.of(DEFAULT_ROOM);
-        given(roomRepository.findAll()).willReturn(rooms);
+        given(roomRepository.findAll()).willReturn(DEFAULT_ROOM_LIST);
         given(roomMapper.toRoomDto(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM_DTO);
 
-        assertEquals(DEFAULT_ROOM_DTO, roomService.getRooms().get(0));
+        assertEquals(DEFAULT_ROOM_DTO, roomService.getAllRooms().get(0));
 
         then(roomRepository).should(only()).findAll();
-        then(roomMapper).should(times(1)).toRoomDto(DEFAULT_ROOM);
-        then(roomMapper).shouldHaveNoMoreInteractions();
+        then(roomMapper).should(only()).toRoomDto(DEFAULT_ROOM);
     }
 
     @Test
@@ -85,8 +85,7 @@ class RoomServiceTest {
         assertEquals(DEFAULT_ROOM_DTO, roomService.getRoomById(DEFAULT_ID));
 
         then(roomRepository).should(only()).findById(DEFAULT_ID);
-        then(roomMapper).should(times(1)).toRoomDto(DEFAULT_ROOM);
-        then(roomMapper).shouldHaveNoMoreInteractions();
+        then(roomMapper).should(only()).toRoomDto(DEFAULT_ROOM);
     }
 
     @Test

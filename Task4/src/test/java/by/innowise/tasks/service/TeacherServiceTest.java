@@ -44,6 +44,8 @@ class TeacherServiceTest {
             .experience(DEFAULT_EXPERIENCE)
             .build();
 
+    public static final List<Teacher> DEFAULT_TEACHERS_LIST = List.of(DEFAULT_TEACHER);
+
     @Mock
     private TeacherRepository teacherRepository;
 
@@ -68,16 +70,14 @@ class TeacherServiceTest {
     }
 
     @Test
-    void getTeachers() {
-        List<Teacher> faculty = List.of(DEFAULT_TEACHER);
-        given(teacherRepository.findAll()).willReturn(faculty);
+    void getAllTeachers() {
+        given(teacherRepository.findAll()).willReturn(DEFAULT_TEACHERS_LIST);
         given(teacherMapper.toTeacherDto(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER_DTO);
 
-        assertEquals(DEFAULT_TEACHER_DTO, teacherService.getTeachers().get(0));
+        assertEquals(DEFAULT_TEACHER_DTO, teacherService.getAllTeachers().get(0));
 
         then(teacherRepository).should(only()).findAll();
-        then(teacherMapper).should(times(1)).toTeacherDto(DEFAULT_TEACHER);
-        then(teacherMapper).shouldHaveNoMoreInteractions();
+        then(teacherMapper).should(only()).toTeacherDto(DEFAULT_TEACHER);
     }
 
     @Test
@@ -88,8 +88,7 @@ class TeacherServiceTest {
         assertEquals(DEFAULT_TEACHER_DTO, teacherService.getTeacherById(DEFAULT_ID));
 
         then(teacherRepository).should(only()).findById(DEFAULT_ID);
-        then(teacherMapper).should(times(1)).toTeacherDto(DEFAULT_TEACHER);
-        then(teacherMapper).shouldHaveNoMoreInteractions();
+        then(teacherMapper).should(only()).toTeacherDto(DEFAULT_TEACHER);
     }
 
     @Test

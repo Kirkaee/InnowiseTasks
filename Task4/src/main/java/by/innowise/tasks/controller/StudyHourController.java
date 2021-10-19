@@ -15,7 +15,7 @@ public class StudyHourController {
     private StudyHourService studyHourService;
 
     @GetMapping
-    public List<StudyHourDto> getStudyHour() {
+    public List<StudyHourDto> getAllStudyHours() {
         return studyHourService.getStudyHours();
     }
 

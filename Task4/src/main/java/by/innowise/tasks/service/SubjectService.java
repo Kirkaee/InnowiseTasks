@@ -27,7 +27,7 @@ public class SubjectService {
                                 .toSubject(subjectDto)));
     }
 
-    public List<SubjectDto> getSubjects() {
+    public List<SubjectDto> getAllSubjects() {
         return subjectRepository
                 .findAll()
                 .stream()

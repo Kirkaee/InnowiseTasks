@@ -9,8 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @Sql(scripts = "/sql/insert.sql", executionPhase = BEFORE_TEST_METHOD)
@@ -68,8 +67,13 @@ class StudyHourRepositoryTest extends AbstractIntegrationDataBaseTest {
     }
 
     @Test
-    public void findById() {
+    public void findStudyHourById() {
         assertTrue(studyHourRepository.findById(3L).isPresent());
+    }
+
+    @Test
+    public void findAllStudyHours() {
+        assertFalse(studyHourRepository.findAll().isEmpty());
     }
 
     @Test

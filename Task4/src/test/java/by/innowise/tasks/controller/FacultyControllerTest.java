@@ -116,7 +116,7 @@ class FacultyControllerTest {
     }
 
     @Test
-    void getFacultyByIdNotFound() {
+    void getFacultyByIdNotFoundException() {
         given(facultyRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

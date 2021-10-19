@@ -89,7 +89,7 @@ class TeacherControllerTest {
     }
 
     @Test
-    void getTeacher() {
+    void getAllTeachers() {
         given(teacherRepository.findAll()).willReturn(List.of(DEFAULT_TEACHER));
 
         webTestClient.get()
@@ -117,7 +117,7 @@ class TeacherControllerTest {
     }
 
     @Test
-    void getTeacherByIdNotFound() {
+    void getTeacherByIdNotFoundException() {
         given(teacherRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

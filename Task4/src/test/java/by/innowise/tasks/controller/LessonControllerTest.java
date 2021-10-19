@@ -82,7 +82,7 @@ class LessonControllerTest {
     }
 
     @Test
-    void getLesson() {
+    void getAllLessons() {
         given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_LESSON));
 
         webTestClient.get()
@@ -110,7 +110,7 @@ class LessonControllerTest {
     }
 
     @Test
-    void getLessonByIdNotFound() {
+    void getLessonByIdNotFoundException() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

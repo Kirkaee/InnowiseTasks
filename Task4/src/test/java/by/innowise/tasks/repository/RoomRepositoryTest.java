@@ -9,8 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 
@@ -32,13 +31,18 @@ class RoomRepositoryTest extends AbstractIntegrationDataBaseTest {
     private RoomRepository roomRepository;
 
     @Test
-    public void shouldSaveRoom() {
+    public void saveRoom() {
         assertEquals(DEFAULT_ROOM, roomRepository.saveAndFlush(DEFAULT_ROOM));
     }
 
     @Test
-    public void findById() {
+    public void findByIdRoom() {
         assertTrue(roomRepository.findById(2L).isPresent());
+    }
+
+    @Test
+    public void findAllRoom() {
+        assertFalse(roomRepository.findAll().isEmpty());
     }
 
     @Test

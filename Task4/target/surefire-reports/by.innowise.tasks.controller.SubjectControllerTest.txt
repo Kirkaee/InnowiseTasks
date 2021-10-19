@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: by.innowise.tasks.controller.SubjectControllerTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.78 s - in by.innowise.tasks.controller.SubjectControllerTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.737 s - in by.innowise.tasks.controller.SubjectControllerTest

@@ -3,6 +3,7 @@ package by.innowise.tasks.service;
 import by.innowise.tasks.dto.EventDto;
 import by.innowise.tasks.entity.Event;
 import by.innowise.tasks.entity.StudyHour;
+import by.innowise.tasks.handler.NotFoundException;
 import by.innowise.tasks.mapper.EventMapper;
 import by.innowise.tasks.repository.StudyHourRepository;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import static by.innowise.tasks.service.EventService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
 
-    public static final Long DEFAULT_ID = 0L;
+    public static final Long DEFAULT_ID = 1L;
     public static final Timestamp DEFAULT_CLASS_DATE = Timestamp.valueOf("2017-06-22 19:10:25");
     public static final String DEFAULT_TYPE = "event";
     public static final String DEFAULT_TOPIC = "topic";
@@ -42,6 +44,8 @@ class EventServiceTest {
             .type(DEFAULT_TYPE)
             .topic(DEFAULT_TOPIC)
             .build();
+
+    public static final List<StudyHour> DEFAULT_EVENTS_LIST = List.of(DEFAULT_EVENT);
 
     @Mock
     private StudyHourRepository studyHourRepository;
@@ -68,16 +72,14 @@ class EventServiceTest {
     }
 
     @Test
-    void getEvents() {
-        List<StudyHour> events = List.of(DEFAULT_EVENT);
-        given(studyHourRepository.findAll()).willReturn(events);
+    void getAllEvents() {
+        given(studyHourRepository.findAll()).willReturn(DEFAULT_EVENTS_LIST);
         given(eventMapper.toEventDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, eventService.getEvents().get(0));
+        assertEquals(DEFAULT_EVENT_DTO, eventService.getAllEvents().get(0));
 
         then(studyHourRepository).should(only()).findAll();
-        then(eventMapper).should(times(1)).toEventDto(DEFAULT_EVENT);
-        then(eventMapper).shouldHaveNoMoreInteractions();
+        then(eventMapper).should(only()).toEventDto(DEFAULT_EVENT);
     }
 
     @Test
@@ -88,8 +90,7 @@ class EventServiceTest {
         assertEquals(DEFAULT_EVENT_DTO, eventService.getEventById(DEFAULT_ID));
 
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);
-        then(eventMapper).should(times(1)).toEventDto(DEFAULT_EVENT);
-        then(eventMapper).shouldHaveNoMoreInteractions();
+        then(eventMapper).should(only()).toEventDto(DEFAULT_EVENT);
     }
 
     @Test
@@ -111,5 +112,17 @@ class EventServiceTest {
         then(eventMapper).should(times(1)).toEvent(DEFAULT_EVENT_DTO);
         then(eventMapper).should(times(1)).toEventDto(DEFAULT_EVENT);
         then(eventMapper).shouldHaveNoMoreInteractions();
+    }
+
+    @Test
+    void getDepartmentByIdNotFoundException() {
+
+        given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
+
+        NotFoundException notFoundException = assertThrows(NotFoundException.class,
+                () -> eventService.getEventById(DEFAULT_ID));
+        assertEquals(String.format(NOT_FOUND_BY_ID, DEFAULT_ID), notFoundException.getMessage());
+
+        then(studyHourRepository).should(only()).findById(DEFAULT_ID);
     }
 }

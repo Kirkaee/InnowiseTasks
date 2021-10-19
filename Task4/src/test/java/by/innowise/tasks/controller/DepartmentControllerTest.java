@@ -117,7 +117,7 @@ class DepartmentControllerTest {
     }
 
     @Test
-    void getDepartmentByIdNotFound() {
+    void getDepartmentByIdNotFoundException() {
         given(departmentRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

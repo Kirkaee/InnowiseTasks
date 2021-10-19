@@ -29,7 +29,7 @@ public class LessonService {
                                 .toLesson(lessonDto)));
     }
 
-    public List<LessonDto> getLesson() {
+    public List<LessonDto> getAllLessons() {
         return studyHourRepository.findAll().stream()
                 .filter(n -> n instanceof Lesson)
                 .map(n -> lessonMapper.toLessonDto((Lesson) n))

@@ -9,8 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @Sql(scripts = "/sql/insert.sql", executionPhase = BEFORE_TEST_METHOD)
@@ -29,13 +28,18 @@ class SubjectRepositoryTest extends AbstractIntegrationDataBaseTest {
     private SubjectRepository subjectRepository;
 
     @Test
-    public void shouldSaveSubject() {
+    public void saveSubject() {
         assertEquals(DEFAULT_SUBJECT, subjectRepository.save(DEFAULT_SUBJECT));
     }
 
     @Test
-    public void findById() {
+    public void findSubjectById() {
         assertTrue(subjectRepository.findById(2L).isPresent());
+    }
+
+    @Test
+    public void getAllSubjects() {
+        assertFalse(subjectRepository.findAll().isEmpty());
     }
 
     @Test

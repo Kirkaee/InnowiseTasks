@@ -27,7 +27,7 @@ public class SpeakerService {
                                 .toSpeaker(speakerDto)));
     }
 
-    public List<SpeakerDto> getSpeakers() {
+    public List<SpeakerDto> getAllSpeakers() {
         return speakerRepository
                 .findAll()
                 .stream()

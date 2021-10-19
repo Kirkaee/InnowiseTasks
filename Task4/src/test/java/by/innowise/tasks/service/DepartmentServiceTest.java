@@ -39,6 +39,8 @@ class DepartmentServiceTest {
             .name(DEFAULT_NAME)
             .build();
 
+    public static final List<Department> DEFAULT_DEPARTMENTS_LIST = List.of(DEFAULT_DEPARTMENT);
+
     @Mock
     private DepartmentRepository departmentRepository;
 
@@ -63,16 +65,14 @@ class DepartmentServiceTest {
     }
 
     @Test
-    void getDepartments() {
-        List<Department> departments = List.of(DEFAULT_DEPARTMENT);
-        given(departmentRepository.findAll()).willReturn(departments);
+    void getAllDepartments() {
+        given(departmentRepository.findAll()).willReturn(DEFAULT_DEPARTMENTS_LIST);
         given(departmentMapper.toDepartmentDto(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT_DTO);
 
         assertEquals(DEFAULT_DEPARTMENT_DTO, departmentService.getAllDepartments().get(0));
 
         then(departmentRepository).should(only()).findAll();
-        then(departmentMapper).should(Mockito.times(1)).toDepartmentDto(DEFAULT_DEPARTMENT);
-        then(departmentMapper).shouldHaveNoMoreInteractions();
+        then(departmentMapper).should(only()).toDepartmentDto(DEFAULT_DEPARTMENT);
     }
 
     @Test
@@ -83,8 +83,7 @@ class DepartmentServiceTest {
         assertEquals(DEFAULT_DEPARTMENT_DTO, departmentService.getDepartmentById(DEFAULT_ID));
 
         then(departmentRepository).should(only()).findById(DEFAULT_ID);
-        then(departmentMapper).should(Mockito.times(1)).toDepartmentDto(DEFAULT_DEPARTMENT);
-        then(departmentMapper).shouldHaveNoMoreInteractions();
+        then(departmentMapper).should(only()).toDepartmentDto(DEFAULT_DEPARTMENT);
     }
 
     @Test

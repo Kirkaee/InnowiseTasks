@@ -43,6 +43,8 @@ class SpeakerServiceTest {
             .membership(DEFAULT_MEMBERSHIP)
             .build();
 
+    public static final List<Speaker> DEFAULT_SPEAKERS_LIST = List.of(DEFAULT_SPEAKER);
+
     @Mock
     private SpeakerRepository speakerRepository;
 
@@ -68,15 +70,13 @@ class SpeakerServiceTest {
 
     @Test
     void getSpeakers() {
-        List<Speaker> speakers = List.of(DEFAULT_SPEAKER);
-        given(speakerRepository.findAll()).willReturn(speakers);
+        given(speakerRepository.findAll()).willReturn(DEFAULT_SPEAKERS_LIST);
         given(speakerMapper.toSpeakerDto(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER_DTO);
 
-        assertEquals(DEFAULT_SPEAKER_DTO, speakerService.getSpeakers().get(0));
+        assertEquals(DEFAULT_SPEAKER_DTO, speakerService.getAllSpeakers().get(0));
 
         then(speakerRepository).should(only()).findAll();
-        then(speakerMapper).should(times(1)).toSpeakerDto(DEFAULT_SPEAKER);
-        then(speakerMapper).shouldHaveNoMoreInteractions();
+        then(speakerMapper).should(only()).toSpeakerDto(DEFAULT_SPEAKER);
     }
 
     @Test
@@ -87,8 +87,7 @@ class SpeakerServiceTest {
         assertEquals(DEFAULT_SPEAKER_DTO, speakerService.getSpeakerById(DEFAULT_ID));
 
         then(speakerRepository).should(only()).findById(DEFAULT_ID);
-        then(speakerMapper).should(times(1)).toSpeakerDto(DEFAULT_SPEAKER);
-        then(speakerMapper).shouldHaveNoMoreInteractions();
+        then(speakerMapper).should(only()).toSpeakerDto(DEFAULT_SPEAKER);
     }
 
     @Test

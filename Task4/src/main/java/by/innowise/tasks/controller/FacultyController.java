@@ -15,8 +15,8 @@ public class FacultyController {
     private FacultyService facultyService;
 
     @GetMapping
-    public List<FacultyDto> getFaculties() {
-        return facultyService.getFaculty();
+    public List<FacultyDto> getAllFaculties() {
+        return facultyService.getAllFaculties();
     }
 
     @GetMapping("/{id}")

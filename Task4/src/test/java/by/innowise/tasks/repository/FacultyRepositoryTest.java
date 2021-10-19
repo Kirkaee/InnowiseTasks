@@ -9,8 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @Sql(scripts = "/sql/insert.sql", executionPhase = BEFORE_TEST_METHOD)
@@ -29,13 +28,18 @@ class FacultyRepositoryTest extends AbstractIntegrationDataBaseTest {
     private FacultyRepository facultyRepository;
 
     @Test
-    public void shouldSaveFaculty() {
+    public void saveFaculty() {
         assertEquals(DEFAULT_FACULTY, facultyRepository.save(DEFAULT_FACULTY));
     }
 
     @Test
-    public void findById() {
+    public void findByIdFaculty() {
         assertTrue(facultyRepository.findById(2L).isPresent());
+    }
+
+    @Test
+    public void findAllFaculties() {
+        assertFalse(facultyRepository.findAll().isEmpty());
     }
 
     @Test
@@ -46,7 +50,6 @@ class FacultyRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void updateFaculty() {
-        System.out.println(facultyRepository.findAll());
         facultyRepository.findById(2L)
                 .map(faculty -> {
                             faculty.setName(NEW_NAME);
@@ -55,7 +58,6 @@ class FacultyRepositoryTest extends AbstractIntegrationDataBaseTest {
                 ).orElseThrow();
         assertTrue(facultyRepository.findById(2L).stream()
                 .allMatch(faculty -> faculty.getName().equals(NEW_NAME)));
-        System.out.println(facultyRepository.findAll());
     }
 
 }

@@ -167,7 +167,7 @@ class StudyHourServiceTest {
     }
 
     @Test
-    void getStudyHours() {
+    void getAllStudyHours() {
         given(studyHourRepository.findAll()).willReturn(DEFAULT_STUDY_HOUR_LIST);
         given(studyHourMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 

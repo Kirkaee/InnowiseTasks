@@ -84,7 +84,7 @@ class EventControllerTest {
     }
 
     @Test
-    void getEvent() {
+    void getAllEvents() {
         given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_EVENT));
 
         webTestClient.get()
@@ -112,7 +112,7 @@ class EventControllerTest {
     }
 
     @Test
-    void getEventByIdNotFound() {
+    void getEventByIdNotFoundException() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         webTestClient.get()

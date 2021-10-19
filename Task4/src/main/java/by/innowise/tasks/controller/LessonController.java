@@ -15,8 +15,8 @@ public class LessonController {
     private LessonService lessonService;
 
     @GetMapping
-    public List<LessonDto> getLesson() {
-        return lessonService.getLesson();
+    public List<LessonDto> getAllLessons() {
+        return lessonService.getAllLessons();
     }
 
     @GetMapping("/{id}")

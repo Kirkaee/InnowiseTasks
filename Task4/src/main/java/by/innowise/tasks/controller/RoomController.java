@@ -15,8 +15,8 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping
-    public List<RoomDto> getRoom() {
-        return roomService.getRooms();
+    public List<RoomDto> getAllRooms() {
+        return roomService.getAllRooms();
     }
 
     @GetMapping("/{id}")

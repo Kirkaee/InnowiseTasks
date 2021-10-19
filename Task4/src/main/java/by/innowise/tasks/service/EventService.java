@@ -28,7 +28,7 @@ public class EventService {
                                 .toEvent(eventDto)));
     }
 
-    public List<EventDto> getEvents() {
+    public List<EventDto> getAllEvents() {
         return studyHourRepository.findAll().stream()
                 .filter(n -> n instanceof Event)
                 .map(n -> eventMapper.toEventDto((Event) n)).toList();
