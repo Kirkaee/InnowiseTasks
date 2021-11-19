@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.example.domain.Building;
 import org.example.enums.TransportationState;
 
+import java.util.stream.Stream;
+
 public class Validator {
 
     private static final Logger logger = Logger.getLogger(Validator.class);
@@ -30,28 +32,30 @@ public class Validator {
     }
 
     public void isCompletedPassenger(Building building) {
-        for (int i = 0; i < building.getElevator().getTopFloor(); i++) {
-            if (building.getFloors().get(i).getArrivalContainer().stream()
-                    .allMatch(a -> a.getTransportationState() == TransportationState.COMPLETED)) {
-                logger.info("Passengers from the floor number " + (i + 1) + " completed.");
-            }
-        }
+        Stream.iterate(0, i -> i < building.getElevator().getTopFloor(), i -> i + 1)
+                .forEach(integer -> {
+                    if (building.getFloors().get(integer).getArrivalContainer()
+                            .stream().allMatch(passenger ->
+                                    passenger.getTransportationState().equals(TransportationState.COMPLETED))) {
+                        logger.info("Passengers from the floor number " + (integer + 1) + " completed.");
+                    }
+                });
     }
 
     public void isDestinationFloor(Building building) {
-        for (int i = 0; i < building.getElevator().getTopFloor(); i++) {
-            int finalI = i;
-            if (building.getFloors().get(i).getArrivalContainer().stream().allMatch(n -> n.getDestinationFloor() == (finalI + 1))) {
-                logger.info("Passengers on their floor " + (i + 1) + ".");
-            }
-        }
+        Stream.iterate(0, i -> i < building.getElevator().getTopFloor(), i -> i + 1)
+                .forEach(integer -> {
+                    if (building.getFloors().get(integer).getArrivalContainer()
+                            .stream().allMatch(passenger ->
+                                    passenger.getDestinationFloor() == integer + 1)) {
+                        logger.info("Passengers on their floor " + (integer + 1) + ".");
+                    }
+                });
     }
 
     public void differenceBetweenInitialAndTransported(Building building) {
-        long count = 0;
-        for (int i = 0; i < building.getElevator().getTopFloor(); i++) {
-            count += building.getFloors().get(i).getArrivalContainer().size();
-        }
+        long count = Stream.iterate(0, i -> i < building.getElevator().getTopFloor(), i -> i + 1)
+                .mapToLong(integer -> building.getFloors().get(integer).getArrivalContainer().size()).sum();
         if (count == building.getPassengerNumber()) {
             logger.info("Passengers number = passenger in arrival containers.");
         }

@@ -14,10 +14,10 @@ public class PropertiesReader {
         Properties properties = new Properties();
         try {
             properties.load(new FileReader(file));
+            return properties;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return properties;
     }
 
     public static int getPassengersNumber(){
