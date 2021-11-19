@@ -1,0 +1,6 @@
+{
+  "id" : 1,
+  "type" : "typeRoom",
+  "capacity" : 100,
+  "studyHoursDto" : []
+}

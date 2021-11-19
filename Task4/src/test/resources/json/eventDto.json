@@ -1,0 +1,7 @@
+{
+  "typeClass": "by.innowise.tasks.dto.EventDto",
+  "id" : 1,
+  "classDate": null,
+  "type": "event",
+  "topic": "topic"
+}

@@ -1,0 +1,37 @@
+version: "3"
+
+volumes:
+  schedule-data:
+
+services:
+
+  db:
+    image: postgres:13.3
+    container_name: postgres
+    ports:
+      - 5433:5432
+    volumes:
+      - schedule-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=schedule
+    restart: always
+
+  app:
+    container_name: task
+    build:
+      context: .
+    image: app
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/schedule
+      SPRING_DATASOURSE_PASSWORD: postgres
+      SPRING_DATASOURSE_USERNAME: postgres
+    restart: always
+    depends_on:
+      - db
+#    links:
+#      - db
+
