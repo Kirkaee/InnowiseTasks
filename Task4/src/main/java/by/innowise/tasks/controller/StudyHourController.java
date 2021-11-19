@@ -2,21 +2,21 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.StudyHourDto;
 import by.innowise.tasks.service.StudyHourService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/studyHour")
+@RequiredArgsConstructor
 public class StudyHourController {
 
-    @Autowired
-    private StudyHourService studyHourService;
+    private final StudyHourService studyHourService;
 
     @GetMapping
     public List<StudyHourDto> getAllStudyHours() {
-        return studyHourService.getStudyHours();
+        return studyHourService.getAllStudyHours();
     }
 
     @GetMapping("/{id}")
@@ -26,12 +26,12 @@ public class StudyHourController {
 
     @PostMapping
     public void saveStudyHour(@RequestBody StudyHourDto studyHourDto) {
-        studyHourService.saveStudyHour(studyHourDto);
+        studyHourService.save(studyHourDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateStudyHour(@PathVariable Long id, @RequestBody StudyHourDto studyHourDto) {
-        studyHourService.updateStudyHour(id, studyHourDto);
+    @PutMapping()
+    public void updateStudyHour(@RequestBody StudyHourDto studyHourDto) {
+        studyHourService.update(studyHourDto);
     }
 
     @DeleteMapping("/{id}")

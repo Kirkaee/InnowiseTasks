@@ -34,7 +34,7 @@ class SpeakerRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveSpeakers() {
-        assertEquals(DEFAULT_SPEAKER, speakerRepository.save(DEFAULT_SPEAKER));
+        assertEquals(DEFAULT_SPEAKER, speakerRepository.saveAndFlush(DEFAULT_SPEAKER));
     }
 
     @Test
@@ -42,6 +42,11 @@ class SpeakerRepositoryTest extends AbstractIntegrationDataBaseTest {
         assertTrue(speakerRepository.findById(2L).isPresent());
     }
 
+
+    @Test
+    public void findAllSpeaker() {
+        assertTrue(speakerRepository.getAll().findFirst().isPresent());
+    }
 
     @Test
     public void deleteSpeaker() {

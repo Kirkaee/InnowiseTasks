@@ -3,14 +3,13 @@ package by.innowise.tasks.service;
 import by.innowise.tasks.dto.EventDto;
 import by.innowise.tasks.dto.LessonDto;
 import by.innowise.tasks.dto.StudyHourDto;
-import by.innowise.tasks.entity.Event;
-import by.innowise.tasks.entity.Lesson;
 import by.innowise.tasks.handler.NotFoundException;
-import by.innowise.tasks.handler.UnknownClassException;
 import by.innowise.tasks.mapper.StudyHourMapper;
 import by.innowise.tasks.repository.StudyHourRepository;
+import by.innowise.tasks.util.ServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,46 +20,39 @@ public class StudyHourService {
 
     @Autowired
     private StudyHourRepository studyHourRepository;
-
     @Autowired
     private StudyHourMapper studyHourMapper;
-
     @Autowired
-    private EventService eventService;
+    private ServiceFacade serviceFacade;
 
-    @Autowired
-    private LessonService lessonService;
 
-    public StudyHourDto saveStudyHour(StudyHourDto studyHourDto) {
-        if (studyHourDto instanceof EventDto) {
-            return eventService.saveEvent((EventDto) studyHourDto);
-        }
-        if (studyHourDto instanceof LessonDto) {
-            return lessonService.saveLesson((LessonDto) studyHourDto);
-        }
-        throw new UnknownClassException();
+    public StudyHourDto save(StudyHourDto studyHourDto) {
+        return serviceFacade.getService(studyHourDto).save(studyHourDto);
     }
 
-    public StudyHourDto updateStudyHour(Long id, StudyHourDto studyHourDto) {
-        if (studyHourDto instanceof EventDto) {
-            if (getStudyHourById(id) instanceof LessonDto) {
-                return changeLessonToEvent(id, studyHourDto);
-            }
-            return eventService.updateEvent(id, (EventDto) studyHourDto);
+    public void update(StudyHourDto studyHourDto) {
+        if (checkForTypeMatch(studyHourDto)) {
+            serviceFacade.getService(studyHourDto).update(studyHourDto);
+        } else {
+            changeStudyHour(studyHourDto);
         }
-
-        if (studyHourDto instanceof LessonDto) {
-            if (getStudyHourById(id) instanceof EventDto) {
-                return changeEventToLesson(id, studyHourDto);
-            }
-            return lessonService.updateLesson(id, (LessonDto) studyHourDto);
-        }
-        throw new UnknownClassException();
     }
 
-    public List<StudyHourDto> getStudyHours() {
-        return studyHourRepository.findAll().stream()
-                .map(studyHourMapper::toStudyHourDto).toList();
+    public boolean checkForTypeMatch(StudyHourDto studyHourDto) {
+        return (studyHourDto instanceof EventDto && getStudyHourById(studyHourDto.getId()) instanceof  EventDto) ||
+                (studyHourDto instanceof LessonDto && getStudyHourById(studyHourDto.getId()) instanceof LessonDto);
+    }
+
+    public void changeStudyHour(StudyHourDto studyHourDto) {
+        studyHourRepository.deleteById(studyHourDto.getId());
+        serviceFacade.getService(studyHourDto).update(studyHourDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyHourDto> getAllStudyHours() {
+        return studyHourRepository.getAll()
+                .map(studyHourMapper::toStudyHourDto)
+                .toList();
     }
 
     public StudyHourDto getStudyHourById(Long id) {
@@ -70,21 +62,15 @@ public class StudyHourService {
     }
 
     public void deleteStudyHour(Long id) {
-        studyHourRepository
-                .deleteById(id);
+        studyHourRepository.deleteById(id);
     }
 
-    public StudyHourDto changeLessonToEvent(Long id, StudyHourDto studyHourDto) {
-        studyHourRepository.deleteById(id);
-        studyHourDto.setId(id);
-        return eventService.saveEvent((EventDto) studyHourDto);
-    }
 
-    public StudyHourDto changeEventToLesson(Long id, StudyHourDto studyHourDto) {
-        studyHourRepository.deleteById(id);
-        studyHourDto.setId(id);
-        return lessonService.saveLesson((LessonDto) studyHourDto);
-    }
+
+
+
+
+
 
 
 }

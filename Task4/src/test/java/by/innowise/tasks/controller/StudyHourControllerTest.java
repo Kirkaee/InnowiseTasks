@@ -16,9 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -42,12 +42,14 @@ class StudyHourControllerTest {
     public static final String DEFAULT_TOPIC = "topic";
 
     public static final Event DEFAULT_EVENT = Event.builder()
+            .id(DEFAULT_ID)
             .classDate(DEFAULT_CLASS_DATE)
             .type(DEFAULT_TYPE_EVENT)
             .topic(DEFAULT_TOPIC)
             .build();
 
     public static final Lesson DEFAULT_LESSON = Lesson.builder()
+            .id(DEFAULT_ID)
             .classDate(DEFAULT_CLASS_DATE)
             .type(DEFAULT_TYPE_LESSON)
             .build();
@@ -60,8 +62,7 @@ class StudyHourControllerTest {
 
     @Test
     void postStudyHourEvent() {
-        DEFAULT_EVENT.setId(null);
-        given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
+        given(studyHourRepository.saveAndFlush(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -72,13 +73,12 @@ class StudyHourControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).save(DEFAULT_EVENT);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_EVENT);
     }
 
     @Test
     void postStudyHourLesson() {
-        DEFAULT_LESSON.setId(null);
-        given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
+        given(studyHourRepository.saveAndFlush(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -89,17 +89,16 @@ class StudyHourControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).save(DEFAULT_LESSON);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_LESSON);
     }
 
     @Test
     void putStudyHourEvent() {
-        DEFAULT_EVENT.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH_EVENT)))
@@ -114,12 +113,11 @@ class StudyHourControllerTest {
 
     @Test
     void putStudyHourLesson() {
-        DEFAULT_LESSON.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_LESSON));
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH_LESSON)))
@@ -134,12 +132,11 @@ class StudyHourControllerTest {
 
     @Test
     void putStudyHourLessonToEvent() {
-        DEFAULT_EVENT.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_LESSON));
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH_EVENT)))
@@ -155,12 +152,11 @@ class StudyHourControllerTest {
 
     @Test
     void putStudyHourEventToLesson() {
-        DEFAULT_LESSON.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH_LESSON)))
@@ -176,7 +172,7 @@ class StudyHourControllerTest {
 
     @Test
     void getAllStudyHours() {
-        given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_EVENT));
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_LESSON));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -185,7 +181,7 @@ class StudyHourControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).findAll();
+        then(studyHourRepository).should(only()).getAll();
     }
 
     @Test

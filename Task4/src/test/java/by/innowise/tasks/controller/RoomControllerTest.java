@@ -19,6 +19,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -38,10 +39,12 @@ class RoomControllerTest {
     public static final Integer DEFAULT_CAPACITY = 100;
     public static final Event DEFAULT_STUDY_HOUR = Event.builder()
             .id(1L)
+            .type("event")
             .build();
     public static final List<StudyHour> DEFAULT_STUDY_HOURS = List.of(DEFAULT_STUDY_HOUR);
 
     public static final Room DEFAULT_ROOM = Room.builder()
+            .id(DEFAULT_ID)
             .type(DEFAULT_TYPE)
             .capacity(DEFAULT_CAPACITY)
             .studyHours(DEFAULT_STUDY_HOURS)
@@ -56,8 +59,7 @@ class RoomControllerTest {
 
     @Test
     void postRoom() {
-        DEFAULT_ROOM.setId(null);
-        given(roomRepository.save(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
+        given(roomRepository.saveAndFlush(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -68,16 +70,15 @@ class RoomControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(roomRepository).should(only()).save(DEFAULT_ROOM);
+        then(roomRepository).should(only()).saveAndFlush(DEFAULT_ROOM);
     }
 
     @Test
     void putRoom() {
-        DEFAULT_ROOM.setId(DEFAULT_ID);
         given(roomRepository.save(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -90,7 +91,7 @@ class RoomControllerTest {
 
     @Test
     void getAllRooms() {
-        given(roomRepository.findAll()).willReturn(List.of(DEFAULT_ROOM));
+        given(roomRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_ROOM));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -99,7 +100,7 @@ class RoomControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(roomRepository).should(only()).findAll();
+        then(roomRepository).should(only()).getAll();
     }
 
     @Test

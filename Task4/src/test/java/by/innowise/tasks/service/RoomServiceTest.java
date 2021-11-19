@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.RoomService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,13 +55,13 @@ class RoomServiceTest {
 
     @Test
     void saveRoom() {
-        given(roomRepository.save(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
+        given(roomRepository.saveAndFlush(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
         given(roomMapper.toRoom(DEFAULT_ROOM_DTO)).willReturn(DEFAULT_ROOM);
         given(roomMapper.toRoomDto(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM_DTO);
 
         assertEquals(DEFAULT_ROOM_DTO, roomService.saveRoom(DEFAULT_ROOM_DTO));
 
-        then(roomRepository).should(only()).save(DEFAULT_ROOM);
+        then(roomRepository).should(only()).saveAndFlush(DEFAULT_ROOM);
         then(roomMapper).should(times(1)).toRoom(DEFAULT_ROOM_DTO);
         then(roomMapper).should(times(1)).toRoomDto(DEFAULT_ROOM);
         then(roomMapper).shouldHaveNoMoreInteractions();
@@ -68,12 +69,12 @@ class RoomServiceTest {
 
     @Test
     void getRooms() {
-        given(roomRepository.findAll()).willReturn(DEFAULT_ROOM_LIST);
+        given(roomRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_ROOM));
         given(roomMapper.toRoomDto(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM_DTO);
 
         assertEquals(DEFAULT_ROOM_DTO, roomService.getAllRooms().get(0));
 
-        then(roomRepository).should(only()).findAll();
+        then(roomRepository).should(only()).getAll();
         then(roomMapper).should(only()).toRoomDto(DEFAULT_ROOM);
     }
 
@@ -99,14 +100,12 @@ class RoomServiceTest {
     void updateRoom() {
         given(roomRepository.save(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM);
         given(roomMapper.toRoom(DEFAULT_ROOM_DTO)).willReturn(DEFAULT_ROOM);
-        given(roomMapper.toRoomDto(DEFAULT_ROOM)).willReturn(DEFAULT_ROOM_DTO);
 
-        assertEquals(DEFAULT_ROOM_DTO, roomService.updateRoom(DEFAULT_ID, DEFAULT_ROOM_DTO));
+        roomService.updateRoom(DEFAULT_ROOM_DTO);
 
         then(roomRepository).should(only()).save(DEFAULT_ROOM);
-        then(roomMapper).should(times(1)).toRoom(DEFAULT_ROOM_DTO);
-        then(roomMapper).should(times(1)).toRoomDto(DEFAULT_ROOM);
-        then(roomMapper).shouldHaveNoMoreInteractions();
+        then(roomMapper).should(only()).toRoom(DEFAULT_ROOM_DTO);
+
     }
 
     @Test

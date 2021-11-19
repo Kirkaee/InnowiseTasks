@@ -1,33 +1,41 @@
 package by.innowise.tasks.mapper;
 
+import by.innowise.tasks.dto.LessonDto;
 import by.innowise.tasks.dto.SubjectDto;
+import by.innowise.tasks.entity.Lesson;
 import by.innowise.tasks.entity.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@RequiredArgsConstructor
 public class SubjectMapper {
 
-    @Autowired
-    private LessonMapper lessonMapper;
+    private final LessonMapper lessonMapper;
 
     public SubjectDto toSubjectDto(Subject subject) {
+        List<LessonDto> lessons = subject.getLessons().stream()
+                .map(lessonMapper::toStudyHourDto)
+                .map(studyHourDto -> (LessonDto) studyHourDto)
+                .toList();
         return SubjectDto.builder()
                 .id(subject.getId())
                 .name(subject.getName())
-                .lessonsDto(subject.getLessons().stream()
-                        .map(lesson -> lessonMapper.toLessonDto(lesson))
-                        .toList())
+                .lessonsDto(lessons)
                 .build();
     }
 
     public Subject toSubject(SubjectDto subjectDto) {
+        List<Lesson> lessons = subjectDto.getLessonsDto().stream()
+                .map(lessonMapper::toStudyHour)
+                .map(studyHour -> (Lesson) studyHour)
+                .toList();
         return Subject.builder()
                 .id(subjectDto.getId())
                 .name(subjectDto.getName())
-                .lessons(subjectDto.getLessonsDto().stream()
-                        .map(lessonDto -> lessonMapper.toLesson(lessonDto))
-                        .toList())
+                .lessons(lessons)
                 .build();
     }
 }

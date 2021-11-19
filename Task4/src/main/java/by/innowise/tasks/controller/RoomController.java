@@ -2,17 +2,17 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.RoomDto;
 import by.innowise.tasks.service.RoomService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/room")
+@RequiredArgsConstructor
 public class RoomController {
 
-    @Autowired
-    private RoomService roomService;
+    private final RoomService roomService;
 
     @GetMapping
     public List<RoomDto> getAllRooms() {
@@ -29,9 +29,9 @@ public class RoomController {
         roomService.saveRoom(roomDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateRoom(@PathVariable Long id, @RequestBody RoomDto roomDto) {
-        roomService.updateRoom(id, roomDto);
+    @PutMapping()
+    public void updateRoom(@RequestBody RoomDto roomDto) {
+        roomService.updateRoom(roomDto);
     }
 
     @DeleteMapping("/{id}")

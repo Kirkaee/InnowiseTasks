@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.EventService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,38 +60,38 @@ class EventServiceTest {
 
     @Test
     void saveEvent() {
-        given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
-        given(eventMapper.toEvent(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT);
-        given(eventMapper.toEventDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+        given(studyHourRepository.saveAndFlush(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
+        given(eventMapper.toStudyHour(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT);
+        given(eventMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, eventService.saveEvent(DEFAULT_EVENT_DTO));
+        assertEquals(DEFAULT_EVENT_DTO, eventService.save(DEFAULT_EVENT_DTO));
 
-        then(studyHourRepository).should(only()).save(DEFAULT_EVENT);
-        then(eventMapper).should(times(1)).toEvent(DEFAULT_EVENT_DTO);
-        then(eventMapper).should(times(1)).toEventDto(DEFAULT_EVENT);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_EVENT);
+        then(eventMapper).should(times(1)).toStudyHour(DEFAULT_EVENT_DTO);
+        then(eventMapper).should(times(1)).toStudyHourDto(DEFAULT_EVENT);
         then(eventMapper).shouldHaveNoMoreInteractions();
     }
 
     @Test
     void getAllEvents() {
-        given(studyHourRepository.findAll()).willReturn(DEFAULT_EVENTS_LIST);
-        given(eventMapper.toEventDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_EVENT));
+        given(eventMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, eventService.getAllEvents().get(0));
+        assertEquals(DEFAULT_EVENT_DTO, eventService.getAllStudyHours().get(0));
 
-        then(studyHourRepository).should(only()).findAll();
-        then(eventMapper).should(only()).toEventDto(DEFAULT_EVENT);
+        then(studyHourRepository).should(only()).getAll();
+        then(eventMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
     }
 
     @Test
     void getEventById() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
-        given(eventMapper.toEventDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+        given(eventMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, eventService.getEventById(DEFAULT_ID));
+        assertEquals(DEFAULT_EVENT_DTO, eventService.getStudyHourById(DEFAULT_ID));
 
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);
-        then(eventMapper).should(only()).toEventDto(DEFAULT_EVENT);
+        then(eventMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
     }
 
     @Test
@@ -103,24 +104,21 @@ class EventServiceTest {
     @Test
     void updateEvent() {
         given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
-        given(eventMapper.toEvent(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT);
-        given(eventMapper.toEventDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+        given(eventMapper.toStudyHour(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT);
 
-        assertEquals(DEFAULT_EVENT_DTO, eventService.updateEvent(DEFAULT_ID, DEFAULT_EVENT_DTO));
+        eventService.update(DEFAULT_EVENT_DTO);
 
         then(studyHourRepository).should(only()).save(DEFAULT_EVENT);
-        then(eventMapper).should(times(1)).toEvent(DEFAULT_EVENT_DTO);
-        then(eventMapper).should(times(1)).toEventDto(DEFAULT_EVENT);
-        then(eventMapper).shouldHaveNoMoreInteractions();
+        then(eventMapper).should(only()).toStudyHour(DEFAULT_EVENT_DTO);
     }
 
     @Test
-    void getDepartmentByIdNotFoundException() {
+    void getEventByIdNotFoundException() {
 
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class,
-                () -> eventService.getEventById(DEFAULT_ID));
+                () -> eventService.getStudyHourById(DEFAULT_ID));
         assertEquals(String.format(NOT_FOUND_BY_ID, DEFAULT_ID), notFoundException.getMessage());
 
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);

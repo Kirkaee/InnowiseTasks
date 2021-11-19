@@ -1,5 +1,6 @@
 {
   "typeClass": "by.innowise.tasks.dto.LessonDto",
+  "id" : 1,
   "classDate": null,
   "type": "lesson"
 }

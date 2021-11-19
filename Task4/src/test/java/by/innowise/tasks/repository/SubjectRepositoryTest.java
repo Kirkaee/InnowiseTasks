@@ -29,7 +29,7 @@ class SubjectRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveSubject() {
-        assertEquals(DEFAULT_SUBJECT, subjectRepository.save(DEFAULT_SUBJECT));
+        assertEquals(DEFAULT_SUBJECT, subjectRepository.saveAndFlush(DEFAULT_SUBJECT));
     }
 
     @Test
@@ -39,7 +39,7 @@ class SubjectRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void getAllSubjects() {
-        assertFalse(subjectRepository.findAll().isEmpty());
+        assertTrue(subjectRepository.getAll().findFirst().isPresent());
     }
 
     @Test

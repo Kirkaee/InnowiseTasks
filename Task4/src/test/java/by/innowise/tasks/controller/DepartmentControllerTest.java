@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -44,6 +45,7 @@ class DepartmentControllerTest {
     public static final List<Teacher> DEFAULT_TEACHERS = List.of(DEFAULT_TEACHER);
 
     public static final Department DEFAULT_DEPARTMENT = Department.builder()
+            .id(DEFAULT_ID)
             .name(DEFAULT_NAME)
             .teachers(DEFAULT_TEACHERS)
             .build();
@@ -56,8 +58,7 @@ class DepartmentControllerTest {
 
     @Test
     void postDepartment() {
-        DEFAULT_DEPARTMENT.setId(null);
-        given(departmentRepository.save(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
+        given(departmentRepository.saveAndFlush(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -68,16 +69,15 @@ class DepartmentControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(departmentRepository).should(only()).save(DEFAULT_DEPARTMENT);
+        then(departmentRepository).should(only()).saveAndFlush(DEFAULT_DEPARTMENT);
     }
 
     @Test
     void putDepartment() {
-        DEFAULT_DEPARTMENT.setId(DEFAULT_ID);
         given(departmentRepository.save(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -90,7 +90,7 @@ class DepartmentControllerTest {
 
     @Test
     void getDepartments() {
-        given(departmentRepository.findAll()).willReturn(List.of(DEFAULT_DEPARTMENT));
+        given(departmentRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_DEPARTMENT));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -99,7 +99,7 @@ class DepartmentControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(departmentRepository).should(only()).findAll();
+        then(departmentRepository).should(only()).getAll();
     }
 
     @Test

@@ -2,17 +2,17 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.SpeakerDto;
 import by.innowise.tasks.service.SpeakerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/speaker")
+@RequiredArgsConstructor
 public class SpeakerController {
 
-    @Autowired
-    private SpeakerService speakerService;
+    private final SpeakerService speakerService;
 
     @GetMapping
     public List<SpeakerDto> getAllSpeakers() {
@@ -29,9 +29,9 @@ public class SpeakerController {
         speakerService.saveSpeaker(speakerDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateSpeaker(@PathVariable Long id, @RequestBody SpeakerDto speakerDto) {
-        speakerService.updateSpeaker(id, speakerDto);
+    @PutMapping()
+    public void updateSpeaker(@RequestBody SpeakerDto speakerDto) {
+        speakerService.updateSpeaker(speakerDto);
     }
 
     @DeleteMapping("/{id}")

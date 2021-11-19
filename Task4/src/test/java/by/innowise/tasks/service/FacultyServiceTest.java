@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.FacultyService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,13 +59,13 @@ class FacultyServiceTest {
 
     @Test
     void saveFaculty() {
-        given(facultyRepository.save(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
+        given(facultyRepository.saveAndFlush(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
         given(facultyMapper.toFaculty(DEFAULT_FACULTY_DTO)).willReturn(DEFAULT_FACULTY);
         given(facultyMapper.toFacultyDto(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY_DTO);
 
         assertEquals(DEFAULT_FACULTY_DTO, facultyService.saveFaculty(DEFAULT_FACULTY_DTO));
 
-        then(facultyRepository).should(only()).save(DEFAULT_FACULTY);
+        then(facultyRepository).should(only()).saveAndFlush(DEFAULT_FACULTY);
         then(facultyMapper).should(times(1)).toFaculty(DEFAULT_FACULTY_DTO);
         then(facultyMapper).should(times(1)).toFacultyDto(DEFAULT_FACULTY);
         then(facultyMapper).shouldHaveNoMoreInteractions();
@@ -72,12 +73,12 @@ class FacultyServiceTest {
 
     @Test
     void getFaculty() {
-        given(facultyRepository.findAll()).willReturn(DEFAULT_FACULTIES_LIST);
+        given(facultyRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_FACULTY));
         given(facultyMapper.toFacultyDto(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY_DTO);
 
         assertEquals(DEFAULT_FACULTY_DTO, facultyService.getAllFaculties().get(0));
 
-        then(facultyRepository).should(only()).findAll();
+        then(facultyRepository).should(only()).getAll();
         then(facultyMapper).should(only()).toFacultyDto(DEFAULT_FACULTY);
 
     }
@@ -104,14 +105,12 @@ class FacultyServiceTest {
     void updateFaculty() {
         given(facultyRepository.save(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
         given(facultyMapper.toFaculty(DEFAULT_FACULTY_DTO)).willReturn(DEFAULT_FACULTY);
-        given(facultyMapper.toFacultyDto(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY_DTO);
 
-        assertEquals(DEFAULT_FACULTY_DTO, facultyService.updateFaculty(DEFAULT_ID, DEFAULT_FACULTY_DTO));
+        facultyService.updateFaculty(DEFAULT_FACULTY_DTO);
 
         then(facultyRepository).should(only()).save(DEFAULT_FACULTY);
-        then(facultyMapper).should(times(1)).toFaculty(DEFAULT_FACULTY_DTO);
-        then(facultyMapper).should(times(1)).toFacultyDto(DEFAULT_FACULTY);
-        then(facultyMapper).shouldHaveNoMoreInteractions();
+        then(facultyMapper).should(only()).toFaculty(DEFAULT_FACULTY_DTO);
+
     }
 
     @Test

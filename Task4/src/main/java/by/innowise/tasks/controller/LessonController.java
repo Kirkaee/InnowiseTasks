@@ -1,37 +1,38 @@
 package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.LessonDto;
+import by.innowise.tasks.dto.StudyHourDto;
 import by.innowise.tasks.service.LessonService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/lesson")
+@RequiredArgsConstructor
 public class LessonController {
 
-    @Autowired
-    private LessonService lessonService;
+    private final LessonService lessonService;
 
     @GetMapping
-    public List<LessonDto> getAllLessons() {
-        return lessonService.getAllLessons();
+    public List<StudyHourDto> getAllLessons() {
+        return lessonService.getAllStudyHours();
     }
 
     @GetMapping("/{id}")
-    public LessonDto getLessonById(@PathVariable Long id) {
-        return lessonService.getLessonById(id);
+    public StudyHourDto getLessonById(@PathVariable Long id) {
+        return lessonService.getStudyHourById(id);
     }
 
     @PostMapping
     public void saveLesson(@RequestBody LessonDto lessonDto) {
-        lessonService.saveLesson(lessonDto);
+        lessonService.save(lessonDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateLesson(@PathVariable Long id, @RequestBody LessonDto lessonDto) {
-        lessonService.updateLesson(id, lessonDto);
+    @PutMapping()
+    public void updateLesson(@RequestBody LessonDto lessonDto) {
+        lessonService.update(lessonDto);
     }
 
     @DeleteMapping("/{id}")

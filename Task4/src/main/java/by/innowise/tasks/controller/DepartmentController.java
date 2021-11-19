@@ -2,17 +2,18 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.DepartmentDto;
 import by.innowise.tasks.service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/department")
+@RequiredArgsConstructor
 public class DepartmentController {
 
-    @Autowired
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
 
     @GetMapping
     public List<DepartmentDto> getAllDepartments() {
@@ -29,9 +30,9 @@ public class DepartmentController {
         departmentService.saveDepartment(departmentDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateDepartment(@PathVariable Long id, @RequestBody DepartmentDto departmentDto) {
-        departmentService.updateDepartment(id, departmentDto);
+    @PutMapping()
+    public void updateDepartment(@RequestBody DepartmentDto departmentDto) {
+        departmentService.updateDepartment(departmentDto);
     }
 
     @DeleteMapping("/{id}")

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.SpeakerService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,13 +57,13 @@ class SpeakerServiceTest {
 
     @Test
     void saveSpeaker() {
-        given(speakerRepository.save(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
+        given(speakerRepository.saveAndFlush(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
         given(speakerMapper.toSpeaker(DEFAULT_SPEAKER_DTO)).willReturn(DEFAULT_SPEAKER);
         given(speakerMapper.toSpeakerDto(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER_DTO);
 
         assertEquals(DEFAULT_SPEAKER_DTO, speakerService.saveSpeaker(DEFAULT_SPEAKER_DTO));
 
-        then(speakerRepository).should(only()).save(DEFAULT_SPEAKER);
+        then(speakerRepository).should(only()).saveAndFlush(DEFAULT_SPEAKER);
         then(speakerMapper).should(times(1)).toSpeaker(DEFAULT_SPEAKER_DTO);
         then(speakerMapper).should(times(1)).toSpeakerDto(DEFAULT_SPEAKER);
         then(speakerMapper).shouldHaveNoMoreInteractions();
@@ -70,12 +71,12 @@ class SpeakerServiceTest {
 
     @Test
     void getSpeakers() {
-        given(speakerRepository.findAll()).willReturn(DEFAULT_SPEAKERS_LIST);
+        given(speakerRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_SPEAKER));
         given(speakerMapper.toSpeakerDto(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER_DTO);
 
         assertEquals(DEFAULT_SPEAKER_DTO, speakerService.getAllSpeakers().get(0));
 
-        then(speakerRepository).should(only()).findAll();
+        then(speakerRepository).should(only()).getAll();
         then(speakerMapper).should(only()).toSpeakerDto(DEFAULT_SPEAKER);
     }
 
@@ -101,14 +102,11 @@ class SpeakerServiceTest {
     void updateSpeaker() {
         given(speakerRepository.save(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
         given(speakerMapper.toSpeaker(DEFAULT_SPEAKER_DTO)).willReturn(DEFAULT_SPEAKER);
-        given(speakerMapper.toSpeakerDto(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER_DTO);
 
-        assertEquals(DEFAULT_SPEAKER_DTO, speakerService.updateSpeaker(DEFAULT_ID, DEFAULT_SPEAKER_DTO));
+        speakerService.updateSpeaker(DEFAULT_SPEAKER_DTO);
 
         then(speakerRepository).should(only()).save(DEFAULT_SPEAKER);
-        then(speakerMapper).should(times(1)).toSpeaker(DEFAULT_SPEAKER_DTO);
-        then(speakerMapper).should(times(1)).toSpeakerDto(DEFAULT_SPEAKER);
-        then(speakerMapper).shouldHaveNoMoreInteractions();
+        then(speakerMapper).should(only()).toSpeaker(DEFAULT_SPEAKER_DTO);
     }
 
     @Test

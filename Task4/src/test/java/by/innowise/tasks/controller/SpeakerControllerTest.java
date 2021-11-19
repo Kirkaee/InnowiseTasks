@@ -17,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -37,6 +38,7 @@ class SpeakerControllerTest {
     public static final String DEFAULT_MEMBERSHIP = "membership";
 
     public static final Speaker DEFAULT_SPEAKER = Speaker.builder()
+            .id(DEFAULT_ID)
             .fio(DEFAULT_FIO)
             .title(DEFAULT_TITLE)
             .membership(DEFAULT_MEMBERSHIP)
@@ -50,8 +52,7 @@ class SpeakerControllerTest {
 
     @Test
     void postSpeaker() {
-        DEFAULT_SPEAKER.setId(null);
-        given(speakerRepository.save(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
+        given(speakerRepository.saveAndFlush(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -62,16 +63,15 @@ class SpeakerControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(speakerRepository).should(only()).save(DEFAULT_SPEAKER);
+        then(speakerRepository).should(only()).saveAndFlush(DEFAULT_SPEAKER);
     }
 
     @Test
     void putSpeaker() {
-        DEFAULT_SPEAKER.setId(DEFAULT_ID);
         given(speakerRepository.save(DEFAULT_SPEAKER)).willReturn(DEFAULT_SPEAKER);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -84,7 +84,7 @@ class SpeakerControllerTest {
 
     @Test
     void getSpeaker() {
-        given(speakerRepository.findAll()).willReturn(List.of(DEFAULT_SPEAKER));
+        given(speakerRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_SPEAKER));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -93,7 +93,7 @@ class SpeakerControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(speakerRepository).should(only()).findAll();
+        then(speakerRepository).should(only()).getAll();
     }
 
     @Test

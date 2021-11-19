@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -43,6 +44,7 @@ class FacultyControllerTest {
     public static final List<Department> DEFAULT_DEPARTMENTS = List.of(DEFAULT_DEPARTMENT);
 
     public static final Faculty DEFAULT_FACULTY = Faculty.builder()
+            .id(DEFAULT_ID)
             .name(DEFAULT_NAME)
             .departments(DEFAULT_DEPARTMENTS)
             .build();
@@ -55,8 +57,7 @@ class FacultyControllerTest {
 
     @Test
     void postFaculty() {
-        DEFAULT_FACULTY.setId(null);
-        given(facultyRepository.save(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
+        given(facultyRepository.saveAndFlush(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -67,16 +68,15 @@ class FacultyControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(facultyRepository).should(only()).save(DEFAULT_FACULTY);
+        then(facultyRepository).should(only()).saveAndFlush(DEFAULT_FACULTY);
     }
 
     @Test
     void putFaculty() {
-        DEFAULT_FACULTY.setId(DEFAULT_ID);
         given(facultyRepository.save(DEFAULT_FACULTY)).willReturn(DEFAULT_FACULTY);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -89,7 +89,7 @@ class FacultyControllerTest {
 
     @Test
     void getFaculty() {
-        given(facultyRepository.findAll()).willReturn(List.of(DEFAULT_FACULTY));
+        given(facultyRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_FACULTY));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -98,7 +98,7 @@ class FacultyControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(facultyRepository).should(only()).findAll();
+        then(facultyRepository).should(only()).getAll();
     }
 
     @Test

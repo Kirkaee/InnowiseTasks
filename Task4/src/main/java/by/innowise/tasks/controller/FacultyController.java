@@ -2,17 +2,17 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.FacultyDto;
 import by.innowise.tasks.service.FacultyService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/faculty")
+@RequiredArgsConstructor
 public class FacultyController {
 
-    @Autowired
-    private FacultyService facultyService;
+    private final FacultyService facultyService;
 
     @GetMapping
     public List<FacultyDto> getAllFaculties() {
@@ -29,9 +29,9 @@ public class FacultyController {
         facultyService.saveFaculty(facultyDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateFaculty(@PathVariable Long id, @RequestBody FacultyDto facultyDto) {
-        facultyService.updateFaculty(id, facultyDto);
+    @PutMapping()
+    public void updateFaculty(@RequestBody FacultyDto facultyDto) {
+        facultyService.updateFaculty(facultyDto);
     }
 
     @DeleteMapping("/{id}")

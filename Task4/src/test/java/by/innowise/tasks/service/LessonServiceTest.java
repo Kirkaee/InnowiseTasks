@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.LessonService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,40 +55,42 @@ class LessonServiceTest {
     @InjectMocks
     private LessonService lessonService;
 
+
+
     @Test
     void saveLesson() {
-        given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
-        given(lessonMapper.toLesson(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON);
-        given(lessonMapper.toLessonDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
+        given(studyHourRepository.saveAndFlush(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
+        given(lessonMapper.toStudyHour(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON);
+        given(lessonMapper.toStudyHourDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
 
-        assertEquals(DEFAULT_LESSON_DTO, lessonService.saveLesson(DEFAULT_LESSON_DTO));
+        assertEquals(DEFAULT_LESSON_DTO, lessonService.save(DEFAULT_LESSON_DTO));
 
-        then(studyHourRepository).should(only()).save(DEFAULT_LESSON);
-        then(lessonMapper).should(times(1)).toLesson(DEFAULT_LESSON_DTO);
-        then(lessonMapper).should(times(1)).toLessonDto(DEFAULT_LESSON);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_LESSON);
+        then(lessonMapper).should(times(1)).toStudyHour(DEFAULT_LESSON_DTO);
+        then(lessonMapper).should(times(1)).toStudyHourDto(DEFAULT_LESSON);
         then(lessonMapper).shouldHaveNoMoreInteractions();
     }
 
     @Test
     void getAllLessons() {
-        given(studyHourRepository.findAll()).willReturn(DEFAULT_LESSONS_LIST);
-        given(lessonMapper.toLessonDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_LESSON));
+        given(lessonMapper.toStudyHourDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
 
-        assertEquals(DEFAULT_LESSON_DTO, lessonService.getAllLessons().get(0));
+        assertEquals(DEFAULT_LESSON_DTO, lessonService.getAllStudyHours().get(0));
 
-        then(studyHourRepository).should(only()).findAll();
-        then(lessonMapper).should(only()).toLessonDto(DEFAULT_LESSON);
+        then(studyHourRepository).should(only()).getAll();
+        then(lessonMapper).should(only()).toStudyHourDto(DEFAULT_LESSON);
     }
 
     @Test
     void getLessonById() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_LESSON));
-        given(lessonMapper.toLessonDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
+        given(lessonMapper.toStudyHourDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
 
-        assertEquals(DEFAULT_LESSON_DTO, lessonService.getLessonById(DEFAULT_ID));
+        assertEquals(DEFAULT_LESSON_DTO, lessonService.getStudyHourById(DEFAULT_ID));
 
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);
-        then(lessonMapper).should(only()).toLessonDto(DEFAULT_LESSON);
+        then(lessonMapper).should(only()).toStudyHourDto(DEFAULT_LESSON);
     }
 
     @Test
@@ -100,24 +103,21 @@ class LessonServiceTest {
     @Test
     void updateLesson() {
         given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
-        given(lessonMapper.toLesson(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON);
-        given(lessonMapper.toLessonDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
+        given(lessonMapper.toStudyHour(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON);
 
-        assertEquals(DEFAULT_LESSON_DTO, lessonService.updateLesson(DEFAULT_ID, DEFAULT_LESSON_DTO));
+        lessonService.update(DEFAULT_LESSON_DTO);
 
         then(studyHourRepository).should(only()).save(DEFAULT_LESSON);
-        then(lessonMapper).should(times(1)).toLesson(DEFAULT_LESSON_DTO);
-        then(lessonMapper).should(times(1)).toLessonDto(DEFAULT_LESSON);
-        then(lessonMapper).shouldHaveNoMoreInteractions();
+        then(lessonMapper).should(only()).toStudyHour(DEFAULT_LESSON_DTO);
     }
 
     @Test
-    void getDepartmentByIdNotFoundException() {
+    void getLessonByIdNotFoundException() {
 
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class,
-                () -> lessonService.getLessonById(DEFAULT_ID));
+                () -> lessonService.getStudyHourById(DEFAULT_ID));
         assertEquals(String.format(NOT_FOUND_BY_ID, DEFAULT_ID), notFoundException.getMessage());
 
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);

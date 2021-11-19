@@ -8,6 +8,7 @@ import by.innowise.tasks.entity.StudyHour;
 import by.innowise.tasks.handler.NotFoundException;
 import by.innowise.tasks.mapper.StudyHourMapper;
 import by.innowise.tasks.repository.StudyHourRepository;
+import by.innowise.tasks.util.ServiceFacade;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -74,84 +76,88 @@ class StudyHourServiceTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private ServiceFacade serviceFacade;
+
     @InjectMocks
     private StudyHourService studyHourService;
 
     @Test
-    void saveLesson() {
-        given(lessonService.saveLesson(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON_DTO);
+    void saveLesson(){
+        given(serviceFacade.getService(DEFAULT_LESSON_DTO)).willReturn(lessonService);
+        given(lessonService.save(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON_DTO);
 
-        assertEquals(DEFAULT_LESSON_DTO, studyHourService.saveStudyHour(DEFAULT_LESSON_DTO));
+        assertEquals(DEFAULT_LESSON_DTO, studyHourService.save(DEFAULT_LESSON_DTO));
 
-        then(lessonService).should(times(1)).saveLesson(DEFAULT_LESSON_DTO);
+        then(serviceFacade).should(only()).getService(DEFAULT_LESSON_DTO);
+        then(lessonService).should(only()).save(DEFAULT_LESSON_DTO);
     }
 
     @Test
-    void saveEvent() {
-        given(eventService.saveEvent(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT_DTO);
+    void saveEvent(){
+        given(serviceFacade.getService(DEFAULT_EVENT_DTO)).willReturn(eventService);
+        given(eventService.save(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, studyHourService.saveStudyHour(DEFAULT_EVENT_DTO));
+        assertEquals(DEFAULT_EVENT_DTO, studyHourService.save(DEFAULT_EVENT_DTO));
 
-        then(eventService).should(only()).saveEvent(DEFAULT_EVENT_DTO);
-    }
-
-    @Test
-    void updateEvent() {
-        given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
-        given(eventService.updateEvent(DEFAULT_ID, DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT_DTO);
-        given(studyHourMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
-
-        assertEquals(DEFAULT_EVENT_DTO, studyHourService.updateStudyHour(DEFAULT_ID, DEFAULT_EVENT_DTO));
-
-        then(studyHourRepository).should(only()).findById(DEFAULT_ID);
-        then(eventService).should(only()).updateEvent(DEFAULT_ID, DEFAULT_EVENT_DTO);
-        then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
+        then(serviceFacade).should(only()).getService(DEFAULT_EVENT_DTO);
+        then(eventService).should(only()).save(DEFAULT_EVENT_DTO);
     }
 
     @Test
     void updateLesson() {
-        given(lessonService.updateLesson(DEFAULT_ID, DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON_DTO);
+        given(serviceFacade.getService(DEFAULT_LESSON_DTO)).willReturn(lessonService);
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_LESSON));
         given(studyHourMapper.toStudyHourDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
 
-        assertEquals(DEFAULT_LESSON_DTO, studyHourService.updateStudyHour(DEFAULT_ID, DEFAULT_LESSON_DTO));
+        studyHourService.update(DEFAULT_LESSON_DTO);
 
-        then(lessonService).should(only()).updateLesson(DEFAULT_ID, DEFAULT_LESSON_DTO);
         then(studyHourRepository).should(only()).findById(DEFAULT_ID);
         then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_LESSON);
+        then(serviceFacade).should(only()).getService(DEFAULT_LESSON_DTO);
+    }
+
+    @Test
+    void updateEvent() {
+        given(serviceFacade.getService(DEFAULT_EVENT_DTO)).willReturn(eventService);
+        given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
+        given(studyHourMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+
+        studyHourService.update(DEFAULT_EVENT_DTO);
+
+        then(studyHourRepository).should(only()).findById(DEFAULT_ID);
+        then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
+        then(serviceFacade).should(only()).getService(DEFAULT_EVENT_DTO);
     }
 
     @Test
     void updateLessonToEvent() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_LESSON));
-        given(eventService.saveEvent(DEFAULT_EVENT_DTO)).willReturn(DEFAULT_EVENT_DTO);
         given(studyHourMapper.toStudyHourDto(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON_DTO);
+        given(serviceFacade.getService(DEFAULT_EVENT_DTO)).willReturn(eventService);
 
-
-        assertEquals(DEFAULT_EVENT_DTO, studyHourService.updateStudyHour(DEFAULT_ID, DEFAULT_EVENT_DTO));
+        studyHourService.update(DEFAULT_EVENT_DTO);
 
         then(studyHourRepository).should(times(1)).findById(DEFAULT_ID);
         then(studyHourRepository).should(times(1)).deleteById(DEFAULT_ID);
         then(studyHourRepository).shouldHaveNoMoreInteractions();
-        then(eventService).should(only()).saveEvent(DEFAULT_EVENT_DTO);
         then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_LESSON);
-
+        then(serviceFacade).should(only()).getService(DEFAULT_EVENT_DTO);
     }
 
     @Test
     void updateEventToLesson() {
         given(studyHourRepository.findById(DEFAULT_ID)).willReturn(Optional.ofNullable(DEFAULT_EVENT));
-        given(lessonService.saveLesson(DEFAULT_LESSON_DTO)).willReturn(DEFAULT_LESSON_DTO);
         given(studyHourMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
+        given(serviceFacade.getService(DEFAULT_LESSON_DTO)).willReturn(lessonService);
 
-        assertEquals(DEFAULT_LESSON_DTO, studyHourService.updateStudyHour(DEFAULT_ID, DEFAULT_LESSON_DTO));
+        studyHourService.update(DEFAULT_LESSON_DTO);
 
         then(studyHourRepository).should(times(1)).findById(DEFAULT_ID);
         then(studyHourRepository).should(times(1)).deleteById(DEFAULT_ID);
         then(studyHourRepository).shouldHaveNoMoreInteractions();
-        then(lessonService).should(only()).saveLesson(DEFAULT_LESSON_DTO);
         then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
-
+        then(serviceFacade).should(only()).getService(DEFAULT_LESSON_DTO);
     }
 
 
@@ -168,12 +174,12 @@ class StudyHourServiceTest {
 
     @Test
     void getAllStudyHours() {
-        given(studyHourRepository.findAll()).willReturn(DEFAULT_STUDY_HOUR_LIST);
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_EVENT));
         given(studyHourMapper.toStudyHourDto(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT_DTO);
 
-        assertEquals(DEFAULT_EVENT_DTO, studyHourService.getStudyHours().get(0));
+        assertEquals(DEFAULT_EVENT_DTO, studyHourService.getAllStudyHours().get(0));
 
-        then(studyHourRepository).should(only()).findAll();
+        then(studyHourRepository).should(only()).getAll();
         then(studyHourMapper).should(only()).toStudyHourDto(DEFAULT_EVENT);
     }
 

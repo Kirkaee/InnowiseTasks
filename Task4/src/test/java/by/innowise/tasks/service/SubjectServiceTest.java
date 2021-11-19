@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.SubjectService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,13 +52,13 @@ class SubjectServiceTest {
 
     @Test
     void saveSubject() {
-        given(subjectRepository.save(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
+        given(subjectRepository.saveAndFlush(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
         given(subjectMapper.toSubject(DEFAULT_SUBJECT_DTO)).willReturn(DEFAULT_SUBJECT);
         given(subjectMapper.toSubjectDto(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT_DTO);
 
         assertEquals(DEFAULT_SUBJECT_DTO, subjectService.saveSubject(DEFAULT_SUBJECT_DTO));
 
-        then(subjectRepository).should(only()).save(DEFAULT_SUBJECT);
+        then(subjectRepository).should(only()).saveAndFlush(DEFAULT_SUBJECT);
         then(subjectMapper).should(times(1)).toSubject(DEFAULT_SUBJECT_DTO);
         then(subjectMapper).should(times(1)).toSubjectDto(DEFAULT_SUBJECT);
         then(subjectMapper).shouldHaveNoMoreInteractions();
@@ -65,12 +66,12 @@ class SubjectServiceTest {
 
     @Test
     void getSubjects() {
-        given(subjectRepository.findAll()).willReturn(DEFAULT_SUBJECTS_LIST);
+        given(subjectRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_SUBJECT));
         given(subjectMapper.toSubjectDto(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT_DTO);
 
         assertEquals(DEFAULT_SUBJECT_DTO, subjectService.getAllSubjects().get(0));
 
-        then(subjectRepository).should(only()).findAll();
+        then(subjectRepository).should(only()).getAll();
         then(subjectMapper).should(only()).toSubjectDto(DEFAULT_SUBJECT);
     }
 
@@ -96,14 +97,11 @@ class SubjectServiceTest {
     void updateSubject() {
         given(subjectRepository.save(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
         given(subjectMapper.toSubject(DEFAULT_SUBJECT_DTO)).willReturn(DEFAULT_SUBJECT);
-        given(subjectMapper.toSubjectDto(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT_DTO);
 
-        assertEquals(DEFAULT_SUBJECT_DTO, subjectService.updateSubject(DEFAULT_ID, DEFAULT_SUBJECT_DTO));
+        subjectService.updateSubject(DEFAULT_SUBJECT_DTO);
 
         then(subjectRepository).should(only()).save(DEFAULT_SUBJECT);
-        then(subjectMapper).should(times(1)).toSubject(DEFAULT_SUBJECT_DTO);
-        then(subjectMapper).should(times(1)).toSubjectDto(DEFAULT_SUBJECT);
-        then(subjectMapper).shouldHaveNoMoreInteractions();
+        then(subjectMapper).should(only()).toSubject(DEFAULT_SUBJECT_DTO);
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.TeacherService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,13 +58,13 @@ class TeacherServiceTest {
 
     @Test
     void saveTeacher() {
-        given(teacherRepository.save(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
+        given(teacherRepository.saveAndFlush(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
         given(teacherMapper.toTeacher(DEFAULT_TEACHER_DTO)).willReturn(DEFAULT_TEACHER);
         given(teacherMapper.toTeacherDto(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER_DTO);
 
         assertEquals(DEFAULT_TEACHER_DTO, teacherService.saveTeacher(DEFAULT_TEACHER_DTO));
 
-        then(teacherRepository).should(only()).save(DEFAULT_TEACHER);
+        then(teacherRepository).should(only()).saveAndFlush(DEFAULT_TEACHER);
         then(teacherMapper).should(times(1)).toTeacher(DEFAULT_TEACHER_DTO);
         then(teacherMapper).should(times(1)).toTeacherDto(DEFAULT_TEACHER);
         then(teacherMapper).shouldHaveNoMoreInteractions();
@@ -71,12 +72,12 @@ class TeacherServiceTest {
 
     @Test
     void getAllTeachers() {
-        given(teacherRepository.findAll()).willReturn(DEFAULT_TEACHERS_LIST);
+        given(teacherRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_TEACHER));
         given(teacherMapper.toTeacherDto(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER_DTO);
 
         assertEquals(DEFAULT_TEACHER_DTO, teacherService.getAllTeachers().get(0));
 
-        then(teacherRepository).should(only()).findAll();
+        then(teacherRepository).should(only()).getAll();
         then(teacherMapper).should(only()).toTeacherDto(DEFAULT_TEACHER);
     }
 
@@ -95,21 +96,18 @@ class TeacherServiceTest {
     void deleteTeacher() {
         teacherService.deleteTeacher(DEFAULT_ID);
 
-        teacherRepository.deleteById(DEFAULT_ID);
+        then(teacherRepository).should(only()).deleteById(DEFAULT_ID);
     }
 
     @Test
     void updateTeacher() {
         given(teacherRepository.save(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
         given(teacherMapper.toTeacher(DEFAULT_TEACHER_DTO)).willReturn(DEFAULT_TEACHER);
-        given(teacherMapper.toTeacherDto(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER_DTO);
 
-        assertEquals(DEFAULT_TEACHER_DTO, teacherService.updateTeacher(DEFAULT_ID, DEFAULT_TEACHER_DTO));
+        teacherService.updateTeacher(DEFAULT_TEACHER_DTO);
 
         then(teacherRepository).should(only()).save(DEFAULT_TEACHER);
-        then(teacherMapper).should(times(1)).toTeacher(DEFAULT_TEACHER_DTO);
-        then(teacherMapper).should(times(1)).toTeacherDto(DEFAULT_TEACHER);
-        then(teacherMapper).shouldHaveNoMoreInteractions();
+        then(teacherMapper).should(only()).toTeacher(DEFAULT_TEACHER_DTO);
     }
 
     @Test

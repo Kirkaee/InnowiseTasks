@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -42,6 +43,7 @@ class TeacherControllerTest {
     public static final List<Lesson> DEFAULT_LESSONS = List.of(DEFAULT_LESSON);
 
     public static final Teacher DEFAULT_TEACHER = Teacher.builder()
+            .id(DEFAULT_ID)
             .fio(DEFAULT_FIO)
             .degree(DEFAULT_DEGREE)
             .experience(DEFAULT_EXPERIENCE)
@@ -56,8 +58,7 @@ class TeacherControllerTest {
 
     @Test
     void postDepartment() {
-        DEFAULT_TEACHER.setId(null);
-        given(teacherRepository.save(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
+        given(teacherRepository.saveAndFlush(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -68,16 +69,15 @@ class TeacherControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(teacherRepository).should(only()).save(DEFAULT_TEACHER);
+        then(teacherRepository).should(only()).saveAndFlush(DEFAULT_TEACHER);
     }
 
     @Test
     void putDepartment() {
-        DEFAULT_TEACHER.setId(DEFAULT_ID);
         given(teacherRepository.save(DEFAULT_TEACHER)).willReturn(DEFAULT_TEACHER);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -90,7 +90,7 @@ class TeacherControllerTest {
 
     @Test
     void getAllTeachers() {
-        given(teacherRepository.findAll()).willReturn(List.of(DEFAULT_TEACHER));
+        given(teacherRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_TEACHER));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -99,7 +99,7 @@ class TeacherControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(teacherRepository).should(only()).findAll();
+        then(teacherRepository).should(only()).getAll();
     }
 
     @Test

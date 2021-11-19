@@ -1,13 +1,17 @@
 package by.innowise.tasks.mapper;
 
 import by.innowise.tasks.dto.LessonDto;
+import by.innowise.tasks.dto.StudyHourDto;
 import by.innowise.tasks.entity.Lesson;
+import by.innowise.tasks.entity.StudyHour;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LessonMapper {
+public class LessonMapper extends StudyHourMapper{
 
-    public LessonDto toLessonDto(Lesson lesson) {
+    @Override
+    public StudyHourDto toStudyHourDto(StudyHour studyHour) {
+        Lesson lesson = (Lesson)  studyHour;
         return LessonDto.builder()
                 .id(lesson.getId())
                 .classDate(lesson.getClassDate())
@@ -15,7 +19,9 @@ public class LessonMapper {
                 .build();
     }
 
-    public Lesson toLesson(LessonDto lessonDto) {
+    @Override
+    public StudyHour toStudyHour(StudyHourDto studyHourDto) {
+        LessonDto lessonDto = (LessonDto) studyHourDto;
         return Lesson.builder()
                 .id(lessonDto.getId())
                 .classDate(lessonDto.getClassDate())

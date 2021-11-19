@@ -1,37 +1,45 @@
 package by.innowise.tasks.mapper;
 
+import by.innowise.tasks.dto.LessonDto;
 import by.innowise.tasks.dto.TeacherDto;
+import by.innowise.tasks.entity.Lesson;
 import by.innowise.tasks.entity.Teacher;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@RequiredArgsConstructor
 public class TeacherMapper {
 
-    @Autowired
-    private LessonMapper lessonMapper;
+    private final LessonMapper lessonMapper;
 
     public TeacherDto toTeacherDto(Teacher teacher) {
+        List<LessonDto> lessons = teacher.getLessons().stream()
+                .map(lessonMapper::toStudyHourDto)
+                .map(studyHourDto -> (LessonDto) studyHourDto)
+                .toList();
         return TeacherDto.builder()
                 .id(teacher.getId())
                 .fio(teacher.getFio())
                 .degree(teacher.getDegree())
                 .experience(teacher.getExperience())
-                .lessonsDto(teacher.getLessons().stream()
-                        .map(lesson -> lessonMapper.toLessonDto(lesson))
-                        .toList())
+                .lessonsDto(lessons)
                 .build();
     }
 
     public Teacher toTeacher(TeacherDto teacherDto) {
+        List<Lesson> lessons = teacherDto.getLessonsDto().stream()
+                .map(lessonMapper::toStudyHour)
+                .map(studyHour -> (Lesson) studyHour)
+                .toList();
         return Teacher.builder()
                 .id(teacherDto.getId())
                 .fio(teacherDto.getFio())
                 .degree(teacherDto.getDegree())
                 .experience(teacherDto.getExperience())
-                .lessons(teacherDto.getLessonsDto().stream()
-                        .map(lessonDto -> lessonMapper.toLesson(lessonDto))
-                        .toList())
+                .lessons(lessons)
                 .build();
     }
 }

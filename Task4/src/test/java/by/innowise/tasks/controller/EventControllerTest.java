@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -38,6 +39,7 @@ class EventControllerTest {
     public static final String DEFAULT_TOPIC = "topic";
 
     public static final Event DEFAULT_EVENT = Event.builder()
+            .id(DEFAULT_ID)
             .classDate(DEFAULT_CLASS_DATE)
             .type(DEFAULT_TYPE)
             .topic(DEFAULT_TOPIC)
@@ -51,8 +53,7 @@ class EventControllerTest {
 
     @Test
     void postEvent() {
-        DEFAULT_EVENT.setId(null);
-        given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
+        given(studyHourRepository.saveAndFlush(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -63,16 +64,15 @@ class EventControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).save(DEFAULT_EVENT);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_EVENT);
     }
 
     @Test
     void putEvent() {
-        DEFAULT_EVENT.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_EVENT)).willReturn(DEFAULT_EVENT);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -85,7 +85,7 @@ class EventControllerTest {
 
     @Test
     void getAllEvents() {
-        given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_EVENT));
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_EVENT));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -94,7 +94,7 @@ class EventControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).findAll();
+        then(studyHourRepository).should(only()).getAll();
     }
 
     @Test

@@ -1,37 +1,38 @@
 package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.EventDto;
+import by.innowise.tasks.dto.StudyHourDto;
 import by.innowise.tasks.service.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/event")
+@RequiredArgsConstructor
 public class EventController {
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
 
     @GetMapping
-    public List<EventDto> getAllEvents() {
-        return eventService.getAllEvents();
+    public List<StudyHourDto> getAllEvents() {
+        return eventService.getAllStudyHours();
     }
 
     @GetMapping("/{id}")
-    public EventDto getEventById(@PathVariable Long id) {
-        return eventService.getEventById(id);
+    public StudyHourDto getEventById(@PathVariable Long id) {
+        return eventService.getStudyHourById(id);
     }
 
     @PostMapping
     public void saveEvent(@RequestBody EventDto eventDto) {
-        eventService.saveEvent(eventDto);
+        eventService.save(eventDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
-        eventService.updateEvent(id, eventDto);
+    @PutMapping()
+    public void updateEvent(@RequestBody EventDto eventDto) {
+        eventService.update(eventDto);
     }
 
     @DeleteMapping("/{id}")

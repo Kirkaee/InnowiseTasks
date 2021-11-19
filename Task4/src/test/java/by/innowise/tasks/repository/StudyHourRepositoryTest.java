@@ -58,7 +58,7 @@ class StudyHourRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveLesson() {
-        assertEquals(DEFAULT_LESSON, studyHourRepository.save(DEFAULT_LESSON));
+        assertEquals(DEFAULT_LESSON, studyHourRepository.saveAndFlush(DEFAULT_LESSON));
     }
 
     @Test
@@ -73,7 +73,7 @@ class StudyHourRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void findAllStudyHours() {
-        assertFalse(studyHourRepository.findAll().isEmpty());
+        assertTrue(studyHourRepository.getAll().findFirst().isPresent());
     }
 
     @Test

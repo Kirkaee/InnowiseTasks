@@ -23,6 +23,4 @@ public abstract class StudyHourDto {
     private Long id;
     private Timestamp classDate;
     private String type;
-
-
 }

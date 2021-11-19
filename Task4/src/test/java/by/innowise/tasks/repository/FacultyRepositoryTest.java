@@ -29,7 +29,7 @@ class FacultyRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveFaculty() {
-        assertEquals(DEFAULT_FACULTY, facultyRepository.save(DEFAULT_FACULTY));
+        assertEquals(DEFAULT_FACULTY, facultyRepository.saveAndFlush(DEFAULT_FACULTY));
     }
 
     @Test
@@ -39,7 +39,7 @@ class FacultyRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void findAllFaculties() {
-        assertFalse(facultyRepository.findAll().isEmpty());
+        assertTrue(facultyRepository.getAll().findFirst().isPresent());
     }
 
     @Test

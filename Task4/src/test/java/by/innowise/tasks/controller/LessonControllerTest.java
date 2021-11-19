@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -37,6 +38,7 @@ class LessonControllerTest {
     public static final String DEFAULT_TYPE = "lesson";
 
     public static final Lesson DEFAULT_LESSON = Lesson.builder()
+            .id(DEFAULT_ID)
             .classDate(DEFAULT_CLASS_DATE)
             .type(DEFAULT_TYPE)
             .build();
@@ -49,8 +51,7 @@ class LessonControllerTest {
 
     @Test
     void postLesson() {
-        DEFAULT_LESSON.setId(null);
-        given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
+        given(studyHourRepository.saveAndFlush(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -61,16 +62,15 @@ class LessonControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).save(DEFAULT_LESSON);
+        then(studyHourRepository).should(only()).saveAndFlush(DEFAULT_LESSON);
     }
 
     @Test
     void putLesson() {
-        DEFAULT_LESSON.setId(DEFAULT_ID);
         given(studyHourRepository.save(DEFAULT_LESSON)).willReturn(DEFAULT_LESSON);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -83,7 +83,7 @@ class LessonControllerTest {
 
     @Test
     void getAllLessons() {
-        given(studyHourRepository.findAll()).willReturn(List.of(DEFAULT_LESSON));
+        given(studyHourRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_LESSON));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -92,7 +92,7 @@ class LessonControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(studyHourRepository).should(only()).findAll();
+        then(studyHourRepository).should(only()).getAll();
     }
 
     @Test

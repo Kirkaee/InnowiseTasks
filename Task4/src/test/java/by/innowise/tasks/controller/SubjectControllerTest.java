@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -40,6 +41,7 @@ class SubjectControllerTest {
     public static final List<Lesson> DEFAULT_LESSONS = List.of(DEFAULT_LESSON);
 
     public static final Subject DEFAULT_SUBJECT = Subject.builder()
+            .id(DEFAULT_ID)
             .name(DEFAULT_NAME)
             .lessons(DEFAULT_LESSONS)
             .build();
@@ -52,8 +54,7 @@ class SubjectControllerTest {
 
     @Test
     void postSubject() {
-        DEFAULT_SUBJECT.setId(null);
-        given(subjectRepository.save(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
+        given(subjectRepository.saveAndFlush(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
 
         webTestClient.post()
                 .uri(DEFAULT_URI)
@@ -64,16 +65,15 @@ class SubjectControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(subjectRepository).should(only()).save(DEFAULT_SUBJECT);
+        then(subjectRepository).should(only()).saveAndFlush(DEFAULT_SUBJECT);
     }
 
     @Test
     void putSubject() {
-        DEFAULT_SUBJECT.setId(DEFAULT_ID);
         given(subjectRepository.save(DEFAULT_SUBJECT)).willReturn(DEFAULT_SUBJECT);
 
         webTestClient.put()
-                .uri(DEFAULT_URI_WITH_ID)
+                .uri(DEFAULT_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(Objects.requireNonNull(JsonReader.readJson(DEFAULT_PATH)))
@@ -86,7 +86,7 @@ class SubjectControllerTest {
 
     @Test
     void getAllSubjects() {
-        given(subjectRepository.findAll()).willReturn(List.of(DEFAULT_SUBJECT));
+        given(subjectRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_SUBJECT));
 
         webTestClient.get()
                 .uri(DEFAULT_URI)
@@ -95,7 +95,7 @@ class SubjectControllerTest {
                 .expectStatus()
                 .isOk();
 
-        then(subjectRepository).should(only()).findAll();
+        then(subjectRepository).should(only()).getAll();
     }
 
     @Test

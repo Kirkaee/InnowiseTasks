@@ -3,6 +3,7 @@ package by.innowise.tasks.repository;
 import by.innowise.tasks.entity.Department;
 import by.innowise.tasks.entity.Faculty;
 import by.innowise.tasks.entity.Teacher;
+import net.minidev.json.JSONUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -35,7 +36,7 @@ class DepartmentRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveDepartment() {
-        assertEquals(DEFAULT_DEPARTMENT, departmentRepository.save(DEFAULT_DEPARTMENT));
+        assertEquals(DEFAULT_DEPARTMENT, departmentRepository.saveAndFlush(DEFAULT_DEPARTMENT));
     }
 
     @Test
@@ -45,7 +46,7 @@ class DepartmentRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void findAllDepartments() {
-        assertFalse(departmentRepository.findAll().isEmpty());
+        assertTrue(departmentRepository.getAll().findFirst().isPresent());
     }
 
     @Test
@@ -57,12 +58,12 @@ class DepartmentRepositoryTest extends AbstractIntegrationDataBaseTest {
     @Test
     public void updateDepartment() {
         departmentRepository.findById(2L)
-                .map(faculty -> {
-                            faculty.setName(NEW_NAME);
-                            return departmentRepository.save(faculty);
+                .map(department -> {
+                            department.setName(NEW_NAME);
+                            return departmentRepository.save(department);
                         }
                 ).orElseThrow();
-        assertTrue(departmentRepository.findById(5L).stream()
+        assertTrue(departmentRepository.findById(2L).stream()
                 .allMatch(department -> department.getName().equals(NEW_NAME)));
     }
 

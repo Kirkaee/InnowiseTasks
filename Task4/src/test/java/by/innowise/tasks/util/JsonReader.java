@@ -15,8 +15,7 @@ public class JsonReader {
                     new File(String.valueOf(
                             new ClassPathResource(path).getFile())), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }

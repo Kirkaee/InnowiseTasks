@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static by.innowise.tasks.service.DepartmentService.NOT_FOUND_BY_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,13 +53,13 @@ class DepartmentServiceTest {
 
     @Test
     void saveDepartment() {
-        given(departmentRepository.save(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
+        given(departmentRepository.saveAndFlush(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
         given(departmentMapper.toDepartment(DEFAULT_DEPARTMENT_DTO)).willReturn(DEFAULT_DEPARTMENT);
         given(departmentMapper.toDepartmentDto(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT_DTO);
 
         assertEquals(DEFAULT_DEPARTMENT_DTO, departmentService.saveDepartment(DEFAULT_DEPARTMENT_DTO));
 
-        then(departmentRepository).should(only()).save(DEFAULT_DEPARTMENT);
+        then(departmentRepository).should(only()).saveAndFlush(DEFAULT_DEPARTMENT);
         then(departmentMapper).should(Mockito.times(1)).toDepartment(DEFAULT_DEPARTMENT_DTO);
         then(departmentMapper).should(Mockito.times(1)).toDepartmentDto(DEFAULT_DEPARTMENT);
         then(departmentMapper).shouldHaveNoMoreInteractions();
@@ -66,12 +67,12 @@ class DepartmentServiceTest {
 
     @Test
     void getAllDepartments() {
-        given(departmentRepository.findAll()).willReturn(DEFAULT_DEPARTMENTS_LIST);
+        given(departmentRepository.getAll()).willReturn(Stream.ofNullable(DEFAULT_DEPARTMENT));
         given(departmentMapper.toDepartmentDto(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT_DTO);
 
         assertEquals(DEFAULT_DEPARTMENT_DTO, departmentService.getAllDepartments().get(0));
 
-        then(departmentRepository).should(only()).findAll();
+        then(departmentRepository).should(only()).getAll();
         then(departmentMapper).should(only()).toDepartmentDto(DEFAULT_DEPARTMENT);
     }
 
@@ -95,22 +96,17 @@ class DepartmentServiceTest {
 
     @Test
     void updateDepartment() {
-
         given(departmentRepository.save(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT);
         given(departmentMapper.toDepartment(DEFAULT_DEPARTMENT_DTO)).willReturn(DEFAULT_DEPARTMENT);
-        given(departmentMapper.toDepartmentDto(DEFAULT_DEPARTMENT)).willReturn(DEFAULT_DEPARTMENT_DTO);
 
-        assertEquals(DEFAULT_DEPARTMENT_DTO, departmentService.updateDepartment(DEFAULT_ID, DEFAULT_DEPARTMENT_DTO));
+        departmentService.updateDepartment(DEFAULT_DEPARTMENT_DTO);
 
         then(departmentRepository).should(only()).save(DEFAULT_DEPARTMENT);
-        then(departmentMapper).should(Mockito.times(1)).toDepartment(DEFAULT_DEPARTMENT_DTO);
-        then(departmentMapper).should(Mockito.times(1)).toDepartmentDto(DEFAULT_DEPARTMENT);
-        then(departmentMapper).shouldHaveNoMoreInteractions();
+        then(departmentMapper).should(only()).toDepartment(DEFAULT_DEPARTMENT_DTO);
     }
 
     @Test
     void getDepartmentByIdNotFoundException() {
-
         given(departmentRepository.findById(DEFAULT_ID)).willReturn(Optional.empty());
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class,

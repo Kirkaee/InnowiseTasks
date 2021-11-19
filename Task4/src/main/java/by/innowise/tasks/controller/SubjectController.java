@@ -2,17 +2,17 @@ package by.innowise.tasks.controller;
 
 import by.innowise.tasks.dto.SubjectDto;
 import by.innowise.tasks.service.SubjectService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/subject")
+@RequiredArgsConstructor
 public class SubjectController {
 
-    @Autowired
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
 
     @GetMapping
     public List<SubjectDto> getAllSubjects() {
@@ -29,9 +29,9 @@ public class SubjectController {
         subjectService.saveSubject(subjectDto);
     }
 
-    @PutMapping("/{id}")
-    public void updateSubject(@PathVariable Long id, @RequestBody SubjectDto subjectDto) {
-        subjectService.updateSubject(id, subjectDto);
+    @PutMapping()
+    public void updateSubject(@RequestBody SubjectDto subjectDto) {
+        subjectService.updateSubject(subjectDto);
     }
 
     @DeleteMapping("/{id}")

@@ -25,7 +25,7 @@ class TeacherRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void saveTeacher() {
-        assertEquals(DEFAULT_TEACHER, teacherRepository.save(DEFAULT_TEACHER));
+        assertEquals(DEFAULT_TEACHER, teacherRepository.saveAndFlush(DEFAULT_TEACHER));
     }
 
     @Test
@@ -35,7 +35,7 @@ class TeacherRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void findAllTeachers() {
-        assertFalse(teacherRepository.findAll().isEmpty());
+        assertTrue(teacherRepository.getAll().findFirst().isPresent());
     }
 
     @Test

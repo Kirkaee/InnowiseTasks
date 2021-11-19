@@ -42,7 +42,7 @@ class RoomRepositoryTest extends AbstractIntegrationDataBaseTest {
 
     @Test
     public void findAllRoom() {
-        assertFalse(roomRepository.findAll().isEmpty());
+        assertTrue(roomRepository.getAll().findFirst().isPresent());
     }
 
     @Test
